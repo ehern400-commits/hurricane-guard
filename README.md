@@ -9,7 +9,7 @@ Offline-first hurricane preparedness PWA for Miami (English, Spanish, Haitian Cr
 | **Alert Checker**: labels a message *Verified / Suspicious / Unverified* with reasons | Storms → Alert Checker | ✅ (uses last saved official data) |
 | Location-based official alerts (GPS → neighborhood picker → ZIP) | Home | ✅ saved copy |
 | Active storms from the National Hurricane Center | Home, Storms | ✅ saved copy, labeled |
-| Miami-Dade shelter directory plus Florida-wide official shelter, disaster-update, and 211 links; saved places and directions | Map | ✅ lists (map tiles need internet) |
+| Miami-Dade current open-shelter feed plus Florida-wide official shelter, disaster-update, NHC GIS, FLIPPER, NOAA historical track, and 211 links; saved places and directions | Map | ✅ cached list (external maps need internet) |
 | **Hurricane Ripple Effect**: packages, food, travel, utilities | Impact | ✅ saved copy |
 | Preparedness checklist (custom items, progress %) | Safety → Checklist | ✅ |
 | Emergency contacts (tap to call) | Safety → Contacts | ✅ |
@@ -110,7 +110,9 @@ test-harness/          offline verification rig used while building (see §8); n
 |---|---|---|
 | NHC `CurrentStorms.json` | Active storms, wind, pressure, motion, advisory link | Atlantic + E/C Pacific only. Empty list = no storms NHC is advising on. Category is computed from NHC wind using the Saffir-Simpson scale. |
 | NWS `api.weather.gov/alerts/active?point=lat,lon` | Official alerts for your exact location, and for logistics hubs (Ripple) | U.S. only. Can lag a few minutes. |
-| Miami-Dade GIS, Evacuation Centers (311CRM layer 78) | Shelter list | Lists *possible* centers. It does **not** say which are open; the county announces openings per storm. So every shelter is labeled "Listed: status NOT verified". |
+| [Miami-Dade Open Evacuation Centers](https://opendata.miamidade.gov/datasets/MDC::evacuation-center-shelters-open/explore) | Shelter list | County feed for general-public centers, documented as updated weekly. The app only presents records whose status says open and only treats them as verified when the service metadata was edited within eight days. Older cached records are labeled unverified. If the feed is stale or unreachable, check the county source before traveling. Miami-Dade only; not statewide. |
+| [NHC GIS](https://www.nhc.noaa.gov/gis/), [Miami-Dade FLIPPER](https://experience.arcgis.com/experience/394dd27d22fb4089aa5ae782d97280a2), [NOAA Historical Hurricane Tracks](https://coast.noaa.gov/hurricanes/#map=4/32/-80) | Map references | Official external GIS and interactive mapping resources; they require internet and are not cached by the app. FLIPPER provides situational-awareness layers for Miami-Dade and responders. |
+| [Miami-Dade Weather Ready contacts](https://www.miamidade.gov/initiative/weather-ready/contact.page), [City of Miami Hurricane Guide](https://www.miami.gov/My-Home-Neighborhood/Hurricane-Guide) | Emergency Guide | Links open external pages and require internet. The app's bundled guide, emergency numbers, and offline essentials remain available without a connection. |
 | OpenStreetMap tiles (Leaflet) | Map | Online only. OSM's policy forbids bulk offline tile downloads, so the saved shelter list is the offline fallback. |
 | OSM Nominatim | ZIP → coordinates | Online only, light use. Neighborhood picker works offline. |
 

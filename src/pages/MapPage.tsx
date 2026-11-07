@@ -4,7 +4,7 @@ import { useApp } from "../hooks/AppState";
 import { useI18n } from "../i18n/I18nContext";
 import { useTable } from "../hooks/useTable";
 import { table, uid } from "../db/db";
-import { distanceKm } from "../services/shelters";
+import { distanceKm, OPEN_SHELTERS_SOURCE } from "../services/shelters";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Badge, Button, Card, ExtLink, Freshness, Input, PageHeader, SectionTitle } from "../components/ui";
 import { LocationPicker } from "../components/LocationPicker";
@@ -62,7 +62,7 @@ export default function MapPage() {
 
   const statusBadge = (s: EmergencyShelter) =>
     s.status === "demo" ? <Badge tone="navy">{t("map.demo")}</Badge>
-    : s.status === "verified-open" ? <Badge tone="teal">{t("map.verifiedOpen")}</Badge>
+    : s.status === "verified-open" && shelters.origin === "live" ? <Badge tone="teal">{t("map.verifiedOpen")}</Badge>
     : <Badge tone="warn">{t("map.listed")}</Badge>;
 
   const mapFallback = <p className="rounded-2xl bg-white p-4 text-sm text-navy/70">{t("map.mapOffline")}</p>;
@@ -77,7 +77,10 @@ export default function MapPage() {
           <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-navy/10" />}>
             <MapView
               center={center}
-              shelters={list.slice(0, 200).map((x) => x.s)}
+              shelters={list.slice(0, 200).map(({ s }) => ({
+                ...s,
+                status: s.status === "verified-open" && shelters.origin !== "live" ? "listed" : s.status,
+              }))}
               supportSites={supportSites}
               supportLabel={t("map.disasterSupportBadge")}
               supportServiceLabels={{
@@ -106,6 +109,9 @@ export default function MapPage() {
           <li><ExtLink href="https://www.floridadisaster.org/planprepare/counties/">{t("map.countyEmergencyOffices")}</ExtLink></li>
           <li><ExtLink href="https://www.floridadisaster.org/disaster-updates/">{t("map.stateDisasterUpdates")}</ExtLink></li>
           <li><ExtLink href="https://fl211.org/">{t("map.stateFoodHelp")}</ExtLink></li>
+          <li><ExtLink href="https://www.nhc.noaa.gov/gis/">{t("map.nhcGis")}</ExtLink></li>
+          <li><ExtLink href="https://experience.arcgis.com/experience/394dd27d22fb4089aa5ae782d97280a2">{t("map.flipper")}</ExtLink></li>
+          <li><ExtLink href="https://coast.noaa.gov/hurricanes/#map=4/32/-80">{t("map.hurricaneTracks")}</ExtLink></li>
         </ul>
       </Card>
 
@@ -216,7 +222,8 @@ export default function MapPage() {
         />
       </div>
       {shelters.data === null && <Card><p className="text-sm">{net === "offline" ? t("net.never") : shelters.error ? t("common.unavailable") : t("common.loading")}</p></Card>}
-      {shelters.data && list.length === 0 && <p className="text-sm text-navy/60">{t("map.none")}</p>}
+      {shelters.error && <p className="mb-2 text-sm text-amber-800">{t("map.feedUnavailable")}</p>}
+      {shelters.data !== null && list.length === 0 && <p className="text-sm text-navy/60">{t("map.none")}</p>}
       <ul className="space-y-2">
         {list.slice(0, 50).map(({ s, km }) => (
           <li key={s.id}>
@@ -250,7 +257,7 @@ export default function MapPage() {
       </ul>
       <Freshness fetchedAt={shelters.fetchedAt} origin={shelters.origin} />
       <p className="mt-2 text-xs text-navy/50">
-        {t("map.source")} · <ExtLink href="https://www.miamidade.gov/global/emergency/home.page">{t("common.officialLink")}</ExtLink>
+        {t("map.source")} · <ExtLink href={OPEN_SHELTERS_SOURCE}>{t("common.officialLink")}</ExtLink>
       </p>
     </div>
   );

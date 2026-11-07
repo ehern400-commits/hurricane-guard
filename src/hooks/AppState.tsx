@@ -8,7 +8,7 @@ import {
   getLastOnlineAt, getNetState, isForcedOffline, setForcedOffline, startConnectivityMonitor, subscribeNet, type NetState,
 } from "../offline/connectivity";
 import { loadAlerts, loadStorms, pointKey } from "../services/weather";
-import { loadShelters } from "../services/shelters";
+import { loadShelters, OPEN_SHELTERS_CACHE_KEY } from "../services/shelters";
 import { readCache, type Loaded } from "../services/loader";
 import { getSavedLocation, saveLocation } from "../services/location";
 import { demoAlerts, demoShelters, demoStorms } from "../data/demo";
@@ -73,7 +73,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       recommendLang(languageForLocation(loc));
       setStorms(await readCache<Hurricane[]>("storms"));
       setAlerts(await readCache<WeatherAlert[]>(`alerts:${pointKey(loc.lat, loc.lon)}`));
-      setShelters(await readCache<EmergencyShelter[]>("shelters"));
+      setShelters(await readCache<EmergencyShelter[]>(OPEN_SHELTERS_CACHE_KEY));
       setLastSyncAt((await kv.get<number>("lastDataSync")) ?? null);
     })();
   }, [recommendLang]);

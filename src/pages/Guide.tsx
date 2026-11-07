@@ -7,6 +7,7 @@ import { useApp } from "../hooks/AppState";
 import { GUIDES, type GuideSection } from "../data/guides";
 import { HUBS } from "../logic/ripple";
 import { demoDisruptions } from "../data/demo";
+import { EMERGENCY_NUMBERS } from "../data/resources";
 import { Badge, Card, ExtLink, PageHeader, SectionTitle } from "../components/ui";
 import type { ChecklistItem, EmergencyContact, SavedPlace } from "../types";
 
@@ -71,6 +72,25 @@ export default function Guide() {
         </div>
       ) : (
         <>
+          <Card className="mb-4">
+            <h2 className="font-semibold">{t("guide.offlineEssentialsTitle")}</h2>
+            <p className="mt-1 text-sm text-navy/70">{t("guide.offlineEssentials")}</p>
+            <ul className="mt-3 divide-y divide-navy/5">
+              {EMERGENCY_NUMBERS.filter((number) => number.phone === "911" || number.phone === "311").map((number) => (
+                <li key={number.phone} className="flex items-center gap-3 py-2">
+                  <span className="flex-1 text-sm">{number.phone === "911" ? t("guide.emergency911") : t("guide.county311")}</span>
+                  <a href={number.url} className="inline-flex min-h-11 items-center gap-1 rounded-xl bg-ocean/10 px-3 text-sm font-bold text-ocean">
+                    <Phone size={14} aria-hidden /> {number.phone}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-navy/60">{t("guide.externalLinksNeedInternet")}</p>
+            <div className="mt-3 flex flex-wrap gap-3 text-sm">
+              <ExtLink href="https://www.miamidade.gov/initiative/weather-ready/contact.page">{t("guide.weatherReadyContacts")}</ExtLink>
+              <ExtLink href="https://www.miami.gov/My-Home-Neighborhood/Hurricane-Guide">{t("guide.cityHurricaneGuide")}</ExtLink>
+            </div>
+          </Card>
           <div className="mb-3 grid grid-cols-3 gap-2 rounded-2xl bg-white p-1 shadow-sm" role="tablist">
             {(["before", "during", "after"] as Phase[]).map((p) => (
               <button
