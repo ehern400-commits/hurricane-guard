@@ -14,6 +14,7 @@ import Contacts from "./pages/Contacts";
 import Family from "./pages/Family";
 import Guide from "./pages/Guide";
 import Settings from "./pages/Settings";
+import Donate from "./pages/Donate";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="/safety/contacts" element={<Contacts />} />
               <Route path="/safety/family" element={<Family />} />
               <Route path="/safety/guide" element={<Guide />} />
+              <Route path="/safety/donate" element={<Donate />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -1,4 +1,4 @@
-import { BookOpen, ListChecks, Phone, ScanSearch, Settings, Users } from "lucide-react";
+import { BookOpen, HandHeart, ListChecks, Phone, ScanSearch, Settings, Users } from "lucide-react";
 import { useI18n } from "../i18n/I18nContext";
 import { useTable } from "../hooks/useTable";
 import { progress } from "../logic/checklist";
@@ -20,6 +20,7 @@ export default function Safety() {
         <NavRow to="/safety/contacts" icon={<Phone aria-hidden />} label={t("safety.contacts")} hint={`${contacts?.length ?? 0}`} />
         <NavRow to="/safety/family" icon={<Users aria-hidden />} label={t("safety.family")} />
         <NavRow to="/safety/guide" icon={<BookOpen aria-hidden />} label={t("safety.guide")} hint={t("guide.offlineOk")} />
+        <NavRow to="/safety/donate" icon={<HandHeart aria-hidden />} label={t("safety.donate")} />
         <NavRow to="/storms/check" icon={<ScanSearch aria-hidden />} label={t("safety.checker")} />
         <NavRow to="/settings" icon={<Settings aria-hidden />} label={t("safety.settings")} />
       </div>

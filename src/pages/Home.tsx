@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BellRing, CloudLightning, ListChecks, Phone, RefreshCw, ScanSearch, Tent } from "lucide-react";
+import { BellRing, CloudLightning, HandHeart, ListChecks, Phone, RefreshCw, ScanSearch, Tent } from "lucide-react";
 import { useApp } from "../hooks/AppState";
 import { useI18n } from "../i18n/I18nContext";
 import { useTable } from "../hooks/useTable";
@@ -21,6 +21,7 @@ export default function Home() {
     { to: "/safety/checklist", key: "home.qPrepare", Icon: ListChecks, tone: "bg-teal" },
     { to: "/map", key: "home.qShelters", Icon: Tent, tone: "bg-ocean" },
     { to: "/safety/contacts", key: "home.qContacts", Icon: Phone, tone: "bg-danger" },
+    { to: "/safety/donate", key: "home.qDonate", Icon: HandHeart, tone: "bg-teal" },
     { to: "/storms", key: "home.qStorms", Icon: CloudLightning, tone: "bg-navy" },
   ];
 
