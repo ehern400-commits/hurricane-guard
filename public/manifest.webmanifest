@@ -1,0 +1,17 @@
+{
+  "name": "Hurricane Guard",
+  "short_name": "HurricaneGuard",
+  "description": "Stay Prepared. Stay Connected. Stay Informed. Offline-first hurricane preparedness for Miami.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F8FB",
+  "theme_color": "#10283E",
+  "lang": "en",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "types": [], "typeRoots": [], "noUnusedLocals": true, "noImplicitAny": false },
+  "include": ["../src", "./types"],
+  "exclude": ["../src/**/*.test.ts", "../src/vite-env.d.ts"]
+}
