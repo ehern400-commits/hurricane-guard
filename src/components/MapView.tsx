@@ -4,17 +4,22 @@ import { useEffect, useRef } from "react";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { EmergencyShelter, HistoricalShelter } from "../types";
+import type { DropOffSite } from "../data/donate";
 
 interface Props {
   center: { lat: number; lon: number };
   shelters: EmergencyShelter[];
+  supportSites: DropOffSite[];
+  supportLabel: string;
+  supportServiceLabels: Record<DropOffSite["services"][number], string>;
+  sourceLabel: string;
   historicalShelters: HistoricalShelter[];
   historicalLabel: string;
   historicalDisclaimer: string;
   onSelect?: (s: EmergencyShelter) => void;
 }
 
-export default function MapView({ center, shelters, historicalShelters, historicalLabel, historicalDisclaimer, onSelect }: Props) {
+export default function MapView({ center, shelters, supportSites, supportLabel, supportServiceLabels, sourceLabel, historicalShelters, historicalLabel, historicalDisclaimer, onSelect }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const layer = useRef<L.LayerGroup | null>(null);
@@ -55,6 +60,17 @@ export default function MapView({ center, shelters, historicalShelters, historic
         .on("click", () => onSelect?.(s))
         .addTo(g);
     });
+    supportSites.forEach((s) => {
+      L.circleMarker([s.lat, s.lon], {
+        radius: 9,
+        color: "#166534",
+        fillColor: "#4ADE80",
+        fillOpacity: 0.95,
+      })
+        .bindTooltip(supportLabel)
+        .bindPopup(`<strong>${escapeHtml(s.name)}</strong><br/>${escapeHtml(s.address)}${s.city ? `, ${escapeHtml(s.city)}` : ""}<br/><strong>${escapeHtml(supportLabel)}</strong><br/>${escapeHtml(s.services.map((service) => supportServiceLabels[service]).join(", "))}<br/><a href="${escapeHtml(s.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(sourceLabel)}</a>`)
+        .addTo(g);
+    });
     historicalShelters.forEach((s) => {
       L.circleMarker([s.lat, s.lon], {
         radius: 8,
@@ -67,7 +83,7 @@ export default function MapView({ center, shelters, historicalShelters, historic
         .bindPopup(`<strong>${escapeHtml(s.name)}</strong><br/>${escapeHtml(s.address)}, ${escapeHtml(s.city)}<br/><strong>${escapeHtml(historicalLabel)}</strong><br/>${escapeHtml(s.event)} · ${escapeHtml(s.eventDate)}<br/>${escapeHtml(historicalDisclaimer)}`)
         .addTo(g);
     });
-  }, [shelters, historicalShelters, historicalLabel, historicalDisclaimer, center.lat, center.lon, onSelect]);
+  }, [shelters, supportSites, supportLabel, supportServiceLabels, sourceLabel, historicalShelters, historicalLabel, historicalDisclaimer, center.lat, center.lon, onSelect]);
 
   return <div ref={el} className="h-72 w-full overflow-hidden rounded-2xl" role="application" aria-label="Map" />;
 }

@@ -9,6 +9,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Badge, Button, Card, ExtLink, Freshness, Input, PageHeader, SectionTitle } from "../components/ui";
 import { LocationPicker } from "../components/LocationPicker";
 import { getRecentHistoricalShelters } from "../data/historicalShelters";
+import { getActiveDropOffSites } from "../data/donate";
 import type { EmergencyShelter, SavedPlace } from "../types";
 
 const MapView = lazy(() => import("../components/MapView"));
@@ -30,6 +31,7 @@ export default function MapPage() {
   const [formErr, setFormErr] = useState<string | null>(null);
 
   const center = location ?? { lat: 25.7743, lon: -80.1937 };
+  const supportSites = getActiveDropOffSites();
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     return (shelters.data ?? [])
@@ -76,6 +78,14 @@ export default function MapPage() {
             <MapView
               center={center}
               shelters={list.slice(0, 200).map((x) => x.s)}
+              supportSites={supportSites}
+              supportLabel={t("map.disasterSupportBadge")}
+              supportServiceLabels={{
+                food: t("map.support.food"),
+                supplies: t("map.support.supplies"),
+                donations: t("map.support.donations"),
+              }}
+              sourceLabel={t("common.source")}
               historicalShelters={historicalList.map((x) => x.s)}
               historicalLabel={t("map.historicalBadge")}
               historicalDisclaimer={t("map.historicalDisclaimer")}
@@ -87,6 +97,47 @@ export default function MapPage() {
       )}
 
       <p className="mt-3 rounded-xl bg-warn/15 p-3 text-sm text-amber-900">{t("map.statusNote")}</p>
+
+      <SectionTitle>{t("map.statewideTitle")}</SectionTitle>
+      <Card>
+        <p className="mb-3 text-sm text-navy/70">{t("map.statewideDescription")}</p>
+        <ul className="space-y-2 text-sm">
+          <li><ExtLink href="https://floridadisaster.maps.arcgis.com/apps/webappviewer/index.html?id=c1ba92018f8c489e9c5996188ee05b95">{t("map.statewideShelterMap")}</ExtLink></li>
+          <li><ExtLink href="https://www.floridadisaster.org/planprepare/counties/">{t("map.countyEmergencyOffices")}</ExtLink></li>
+          <li><ExtLink href="https://www.floridadisaster.org/disaster-updates/">{t("map.stateDisasterUpdates")}</ExtLink></li>
+          <li><ExtLink href="https://fl211.org/">{t("map.stateFoodHelp")}</ExtLink></li>
+        </ul>
+      </Card>
+
+      <SectionTitle>{t("map.disasterSupportTitle")}</SectionTitle>
+      {supportSites.length === 0 ? (
+        <Card>
+          <p className="text-sm text-navy/70">{t("map.noActiveSupportSites")}</p>
+          <p className="mt-2 text-sm">
+            <ExtLink href="https://www.miamidade.gov/global/emergency/home.page">{t("donate.officialChannels")}</ExtLink>
+          </p>
+        </Card>
+      ) : (
+        <ul className="mb-4 space-y-2">
+          {supportSites.map((site) => (
+            <li key={`${site.name}-${site.address}`}>
+              <Card className="!p-3">
+                <p className="font-semibold">{site.name}</p>
+                <p className="text-sm text-navy/70">{[site.address, site.city].filter(Boolean).join(", ")}</p>
+                <p className="mt-1 text-xs text-navy/60">{t("map.disasterSupportServices", { services: site.services.map((service) => t(`map.support.${service}`)).join(", ") })}</p>
+                {site.accepts.length > 0 && <p className="text-xs text-navy/60">{t("donate.accepts")}: {site.accepts.join(", ")}</p>}
+                <p className="text-xs text-navy/50">{t("donate.verifiedOn")}: {site.verifiedOn} · {site.activeFrom}–{site.activeThrough}</p>
+                <div className="mt-2 flex gap-2">
+                  <a href={directionsUrl(site)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-1 rounded-xl bg-ocean/10 px-3 text-sm font-semibold text-ocean">
+                    <Navigation size={14} aria-hidden /> {t("common.directions")}
+                  </a>
+                  <ExtLink href={site.sourceUrl}>{t("common.source")}</ExtLink>
+                </div>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <SectionTitle>{t("map.historicalTitle")}</SectionTitle>
       <p className="mb-3 rounded-xl bg-violet-50 p-3 text-sm text-violet-950">{t("map.historicalDisclaimer")}</p>
@@ -153,6 +204,7 @@ export default function MapPage() {
       </div>
 
       <SectionTitle>{t("map.list")}</SectionTitle>
+      <p className="mb-2 text-xs text-navy/60">{t("map.localShelterScope")}</p>
       <div className="relative mb-3">
         <Search size={18} className="absolute left-3 top-3 text-navy/40" aria-hidden />
         <input

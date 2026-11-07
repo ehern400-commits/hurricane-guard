@@ -12,11 +12,35 @@ export interface DonationResource {
 export interface DropOffSite {
   name: string;
   address: string;
+  city?: string;
   lat: number;
   lon: number;
+  services: ("food" | "supplies" | "donations")[];
   accepts: string[];
   sourceUrl: string;
   verifiedOn: string;
+  activeFrom: string;
+  activeThrough: string;
+}
+
+export function getActiveDropOffSites(
+  now = new Date(),
+  sites: DropOffSite[] = dropOffSites,
+): DropOffSite[] {
+  const today = now.toISOString().slice(0, 10);
+  const cutoff = new Date(now);
+  cutoff.setUTCDate(1);
+  cutoff.setUTCMonth(cutoff.getUTCMonth() - 18);
+  cutoff.setUTCDate(Math.min(
+    now.getUTCDate(),
+    new Date(Date.UTC(cutoff.getUTCFullYear(), cutoff.getUTCMonth() + 1, 0)).getUTCDate(),
+  ));
+  const verifiedSince = cutoff.toISOString().slice(0, 10);
+  return sites.filter((site) =>
+    site.activeFrom <= today &&
+    site.activeThrough >= today &&
+    site.verifiedOn >= verifiedSince,
+  );
 }
 
 export const DONATION_RESOURCES: DonationResource[] = [

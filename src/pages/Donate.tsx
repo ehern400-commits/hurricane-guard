@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { CloudOff, Droplets, HandHeart, MapPin, Navigation, Package, ShieldCheck, Users } from "lucide-react";
 import { useI18n } from "../i18n/I18nContext";
-import { DONATION_RESOURCES, dropOffSites, type DonationCategory } from "../data/donate";
+import { DONATION_RESOURCES, getActiveDropOffSites, type DonationCategory, type DropOffSite } from "../data/donate";
 import { Badge, Card, ExtLink, PageHeader, SectionTitle } from "../components/ui";
 import type { I18nKey } from "../i18n/en";
 
 type CategoryFilter = DonationCategory | "all";
+const dropOffSites = getActiveDropOffSites();
 
 const CATEGORIES: { id: CategoryFilter; Icon: typeof HandHeart }[] = [
   { id: "all", Icon: HandHeart },
@@ -15,7 +16,7 @@ const CATEGORIES: { id: CategoryFilter; Icon: typeof HandHeart }[] = [
   { id: "goods", Icon: Package },
 ];
 
-function directionsUrl(site: (typeof dropOffSites)[number]) {
+function directionsUrl(site: DropOffSite) {
   return `https://www.google.com/maps/dir/?api=1&destination=${site.lat},${site.lon}`;
 }
 
@@ -102,8 +103,9 @@ export default function Donate() {
                   <div className="flex-1">
                     <p className="font-semibold">{site.name}</p>
                     <p className="text-sm text-navy/70">{site.address}</p>
+                    <p className="mt-1 text-xs text-navy/60">{t("map.disasterSupportServices", { services: site.services.map((service) => t(`map.support.${service}`)).join(", ") })}</p>
                     <p className="mt-1 text-xs text-navy/60">{t("donate.accepts")}: {site.accepts.join(", ")}</p>
-                    <p className="text-xs text-navy/50">{t("donate.verifiedOn")}: {site.verifiedOn}</p>
+                    <p className="text-xs text-navy/50">{t("donate.verifiedOn")}: {site.verifiedOn} · {site.activeFrom}–{site.activeThrough}</p>
                     <p className="mt-1 text-xs"><ExtLink href={site.sourceUrl}>{t("common.source")}</ExtLink></p>
                   </div>
                 </div>
