@@ -143,6 +143,7 @@ export const en = {
   "map.historicalTitle": "Past shelter locations",
   "map.historicalBadge": "Past shelter — historical record",
   "map.historicalDisclaimer": "These sites were reported as shelters during past events. They are historical records, not current shelter listings; current availability is unconfirmed.",
+  "map.historicalNoneRecent": "No documented shelter activations from the past 18 months are available yet.",
   "map.historicalEvent": "Reported during {event} ({date})",
   "map.mapOffline": "Map tiles need internet. Your saved list below works offline.",
   "map.saved": "Saved places",

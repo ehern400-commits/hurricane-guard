@@ -144,6 +144,7 @@ export const fr: Record<I18nKey, string> = {
   "map.historicalTitle": "Anciens lieux d’hébergement",
   "map.historicalBadge": "Ancien abri — archive historique",
   "map.historicalDisclaimer": "Ces lieux ont été signalés comme abris lors d’événements passés. Il s’agit d’archives historiques, pas d’une liste actuelle ; leur disponibilité actuelle n’est pas confirmée.",
+  "map.historicalNoneRecent": "Aucune ouverture d’abri documentée au cours des 18 derniers mois pour le moment.",
   "map.historicalEvent": "Signalé lors de {event} ({date})",
   "map.mapOffline": "Le fond de carte nécessite une connexion Internet. La liste enregistrée ci-dessous reste accessible hors ligne.",
   "map.saved": "Lieux enregistrés",

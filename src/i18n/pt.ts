@@ -144,6 +144,7 @@ export const pt: Record<I18nKey, string> = {
   "map.historicalTitle": "Locais que já serviram como abrigo",
   "map.historicalBadge": "Abrigo no passado — registro histórico",
   "map.historicalDisclaimer": "Estes locais foram informados como abrigos durante eventos passados. São registros históricos, não uma lista atual; a disponibilidade atual não foi confirmada.",
+  "map.historicalNoneRecent": "Ainda não há registros documentados de abrigos abertos nos últimos 18 meses.",
   "map.historicalEvent": "Informado durante {event} ({date})",
   "map.mapOffline": "Os mapas precisam de internet. A lista salva abaixo funciona offline.",
   "map.saved": "Locais salvos",

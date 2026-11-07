@@ -144,6 +144,7 @@ export const zh: Record<I18nKey, string> = {
   "map.historicalTitle": "曾用作避难所的地点",
   "map.historicalBadge": "过去曾作避难所 — 历史记录",
   "map.historicalDisclaimer": "据报道，这些地点曾在过去的灾害中用作避难所。这是历史记录，不代表当前避难所名单；目前是否开放尚未确认。",
+  "map.historicalNoneRecent": "目前没有过去18个月内有记录的避难所开放信息。",
   "map.historicalEvent": "据报道曾用于 {event}（{date}）",
   "map.mapOffline": "地图图块需要联网。下方已保存的地点列表可离线使用。",
   "map.saved": "已保存的地点",

@@ -62,6 +62,7 @@ export interface HistoricalShelter {
   lon: number;
   event: string;
   eventDate: string;
+  eventDateISO: string;
   sourceName: string;
   sourceUrl: string;
 }
