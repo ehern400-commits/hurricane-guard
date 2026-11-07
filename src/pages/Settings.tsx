@@ -8,6 +8,7 @@ import { seedOnce } from "../db/seed";
 import { Button, Card, ExtLink, PageHeader, SectionTitle } from "../components/ui";
 import { OFFICIAL_SOURCES } from "../data/resources";
 import { LANGUAGE_NAMES, isSupportedLanguage, languageOrder, recommendedLanguage } from "../i18n/languages";
+import { hashImageFile } from "../logic/imageCanvas";
 import type { ChecklistItem, EmergencyContact, FamilyStatus, SavedPlace } from "../types";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -63,6 +64,9 @@ export default function Settings() {
   const statuses = useTable<FamilyStatus>("statuses");
   const places = useTable<SavedPlace>("places");
   const [installEvt, setInstallEvt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [imageHash, setImageHash] = useState<string | null>(null);
+  const [hashError, setHashError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const h = (e: Event) => {
@@ -78,6 +82,28 @@ export default function Settings() {
     for (const s of STORES) if (s !== "kv") await table(s).clear();
     await kv.del("seeded.v1");
     await seedOnce();
+  }
+
+  async function readTeamImage(file: File | undefined) {
+    if (!file) return;
+    setImageHash(null);
+    setHashError(null);
+    setCopied(false);
+    try {
+      setImageHash(await hashImageFile(file));
+    } catch {
+      setHashError(t("set.fakeHashError"));
+    }
+  }
+
+  async function copyHash() {
+    if (!imageHash) return;
+    try {
+      await navigator.clipboard.writeText(imageHash);
+      setCopied(true);
+    } catch {
+      setHashError(t("set.fakeCopyError"));
+    }
   }
 
   return (
@@ -133,6 +159,30 @@ export default function Settings() {
         {installEvt && (
           <Button onClick={() => void installEvt.prompt()}><Download size={16} aria-hidden /> {t("set.install")}</Button>
         )}
+      </Card>
+
+      <SectionTitle>{t("set.fakeToolTitle")}</SectionTitle>
+      <Card>
+        <p className="text-sm text-navy/70">{t("set.fakeToolHelp")}</p>
+        <label className="mt-3 block text-sm font-medium" htmlFor="known-fake-image">{t("set.fakeToolPick")}</label>
+        <input
+          id="known-fake-image"
+          className="mt-1 block w-full text-sm file:mr-3 file:min-h-11 file:rounded-xl file:border-0 file:bg-ocean/10 file:px-3 file:font-semibold file:text-ocean"
+          type="file"
+          accept="image/*"
+          onChange={(event) => {
+            const file = event.currentTarget.files?.[0];
+            event.currentTarget.value = "";
+            void readTeamImage(file);
+          }}
+        />
+        {imageHash && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <code className="rounded-lg bg-navy/5 px-3 py-2 font-mono text-sm">{imageHash}</code>
+            <Button type="button" variant="secondary" onClick={() => void copyHash()}>{t(copied ? "set.fakeCopied" : "set.fakeCopy")}</Button>
+          </div>
+        )}
+        {hashError && <p role="status" className="mt-2 text-sm text-danger">{hashError}</p>}
       </Card>
 
       <SectionTitle>{t("set.storage")}</SectionTitle>

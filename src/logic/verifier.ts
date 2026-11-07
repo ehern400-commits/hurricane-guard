@@ -20,6 +20,18 @@ export type SourceKind =
 export interface VerifyInput {
   text: string;
   source: SourceKind;
+  photo?: {
+    takenAt?: Date;
+    lat?: number;
+    lon?: number;
+    hasMetadata: boolean;
+    aiLabel?: string;
+    aiWatermark?: boolean;
+    contentCredentials?: boolean;
+    editingSoftware?: string;
+    knownFake?: { title: string; year: number; factCheckUrl: string };
+    userFlags?: string[];
+  };
 }
 
 export interface VerifyContext {
@@ -27,6 +39,7 @@ export interface VerifyContext {
   storms: Hurricane[] | null; // null = never loaded
   dataAgeMs: number | null;
   offline: boolean;
+  location?: { lat: number; lon: number } | null;
 }
 
 const OFFICIAL_DOMAINS = [
@@ -72,6 +85,31 @@ export function verifyAlert(input: VerifyInput, ctx: VerifyContext): VerifyResul
   else if (input.source === "news") add("v.sourceNews", 5);
   else if (input.source === "forward") add("v.sourceForward", -15);
   else add("v.sourceUnknown", -5);
+
+  // 0. Photo information
+  if (input.photo) {
+    const { photo } = input;
+    if (!photo.hasMetadata) add("v.photoNoMeta", 0);
+    if (photo.takenAt && Date.now() - photo.takenAt.getTime() > 7 * 24 * 3600_000) {
+      add("v.photoOld", -25, { date: photo.takenAt.toISOString().slice(0, 10) });
+    }
+    if (photo.lat !== undefined && photo.lon !== undefined && ctx.location) {
+      const distance = distanceKm(photo.lat, photo.lon, ctx.location.lat, ctx.location.lon);
+      if (distance > 300) add("v.photoFar", -15, { distance: Math.round(distance) });
+    }
+    if (photo.aiLabel) add("img.aiLabel", -45, { generator: photo.aiLabel });
+    if (photo.aiWatermark) add("img.aiWatermark", -40);
+    if (photo.contentCredentials && !photo.aiLabel) add("img.contentCredentials", 0);
+    if (photo.editingSoftware) add("img.edited", -10, { software: photo.editingSoftware });
+    if (photo.knownFake) {
+      add("img.knownFake", -60, {
+        title: photo.knownFake.title,
+        year: photo.knownFake.year,
+        factCheckUrl: photo.knownFake.factCheckUrl,
+      });
+    }
+    for (const flag of photo.userFlags ?? []) add("img.userFlag", -10, { flag });
+  }
 
   // 2. Links
   const urls = text.match(/\b(?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?/gi) ?? [];
@@ -154,4 +192,13 @@ export function verifyAlert(input: VerifyInput, ctx: VerifyContext): VerifyResul
 
 function cap(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const radians = (degrees: number) => degrees * Math.PI / 180;
+  const dLat = radians(lat2 - lat1);
+  const dLon = radians(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos(radians(lat1)) * Math.cos(radians(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
