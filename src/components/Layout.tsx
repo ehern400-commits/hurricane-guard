@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Bell, FlaskConical, Languages, Wifi, WifiOff, Wind } from "lucide-react";
+import { Bell, CloudLightning, FlaskConical, Languages, Wifi, WifiOff } from "lucide-react";
 import { BottomNav, SideNav } from "./BottomNav";
 import { NotificationCenter } from "./NotificationCenter";
 import { useApp } from "../hooks/AppState";
@@ -19,7 +19,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <div className="min-w-0 flex-1">
         <header className="safe-top sticky top-0 z-30 bg-navy text-white shadow">
           <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
-            <Wind className="text-teal lg:hidden" aria-hidden />
+            <CloudLightning className="text-teal lg:hidden" aria-hidden />
             <span className="flex-1 truncate text-lg font-bold lg:invisible">{t("app.name")}</span>
             <span
               className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${offline ? "bg-warn text-navy" : "bg-white/10"}`}
