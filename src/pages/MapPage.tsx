@@ -8,6 +8,7 @@ import { distanceKm } from "../services/shelters";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Badge, Button, Card, ExtLink, Freshness, Input, PageHeader, SectionTitle } from "../components/ui";
 import { LocationPicker } from "../components/LocationPicker";
+import { HISTORICAL_SHELTERS } from "../data/historicalShelters";
 import type { EmergencyShelter, SavedPlace } from "../types";
 
 const MapView = lazy(() => import("../components/MapView"));
@@ -36,6 +37,13 @@ export default function MapPage() {
       .map((s) => ({ s, km: distanceKm(center.lat, center.lon, s.lat, s.lon) }))
       .sort((a, b) => a.km - b.km);
   }, [shelters.data, q, center.lat, center.lon]);
+  const historicalList = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    return HISTORICAL_SHELTERS
+      .filter((s) => !term || `${s.name} ${s.city} ${s.county} ${s.address} ${s.event}`.toLowerCase().includes(term))
+      .map((s) => ({ s, km: distanceKm(center.lat, center.lon, s.lat, s.lon) }))
+      .sort((a, b) => a.km - b.km);
+  }, [q, center.lat, center.lon]);
 
   async function savePlace(p: Omit<SavedPlace, "id" | "createdAt">) {
     await places.put({ ...p, id: uid("place"), createdAt: Date.now() });
@@ -65,7 +73,13 @@ export default function MapPage() {
       {net === "online" ? (
         <ErrorBoundary fallback={mapFallback}>
           <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-navy/10" />}>
-            <MapView center={center} shelters={list.slice(0, 200).map((x) => x.s)} />
+            <MapView
+              center={center}
+              shelters={list.slice(0, 200).map((x) => x.s)}
+              historicalShelters={historicalList.map((x) => x.s)}
+              historicalLabel={t("map.historicalBadge")}
+              historicalDisclaimer={t("map.historicalDisclaimer")}
+            />
           </Suspense>
         </ErrorBoundary>
       ) : (
@@ -73,6 +87,37 @@ export default function MapPage() {
       )}
 
       <p className="mt-3 rounded-xl bg-warn/15 p-3 text-sm text-amber-900">{t("map.statusNote")}</p>
+
+      <SectionTitle>{t("map.historicalTitle")}</SectionTitle>
+      <p className="mb-3 rounded-xl bg-violet-50 p-3 text-sm text-violet-950">{t("map.historicalDisclaimer")}</p>
+      <ul className="mb-4 space-y-2">
+        {historicalList.map(({ s, km }) => (
+          <li key={s.id}>
+            <Card className="!p-3">
+              <div className="flex items-start gap-3">
+                <MapPin size={20} className="mt-0.5 shrink-0 text-violet-700" aria-hidden />
+                <div className="flex-1">
+                  <p className="font-semibold">{s.name}</p>
+                  <p className="text-sm text-navy/70">{[s.address, s.city].filter(Boolean).join(", ")}</p>
+                  <p className="mt-1 text-xs text-navy/60">{t("map.historicalEvent", { event: s.event, date: s.eventDate })} · {s.county}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <Badge tone="navy">{t("map.historicalBadge")}</Badge>
+                    <span className="text-xs text-navy/50">{t("map.km", { km: km.toFixed(1) })}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <a href={directionsUrl(s)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-1 rounded-xl bg-ocean/10 px-3 text-sm font-semibold text-ocean">
+                  <Navigation size={14} aria-hidden /> {t("common.directions")}
+                </a>
+                <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-ocean hover:bg-ocean/10">
+                  {t("common.source")}: {s.sourceName}
+                </a>
+              </div>
+            </Card>
+          </li>
+        ))}
+      </ul>
 
       <SectionTitle>{t("map.saved")}</SectionTitle>
       <div className="space-y-2">
