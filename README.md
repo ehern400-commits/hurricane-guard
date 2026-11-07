@@ -2,7 +2,7 @@
 
 **Stay Prepared. Stay Connected. Stay Informed.**
 
-Offline-first hurricane preparedness PWA for Miami (English / Español), built for the Sharkbyte hackathon EC-Council challenge: *tell real hurricane alerts from fake ones, explain why in plain language, and keep working when the network goes down.*
+Offline-first hurricane preparedness PWA for Miami (English, Spanish, Haitian Creole, Portuguese, French, and Simplified Chinese), built for the Sharkbyte hackathon EC-Council challenge: *tell real hurricane alerts from fake ones, explain why in plain language, and keep working when the network goes down.*
 
 | Feature | Where | Works offline? |
 |---|---|---|
@@ -15,7 +15,7 @@ Offline-first hurricane preparedness PWA for Miami (English / Español), built f
 | Emergency contacts (tap to call) | Safety → Contacts | ✅ |
 | Family safety status + sync queue | Safety → Family | ✅ saved locally |
 | Emergency guide + search across all local content | Safety → Guide | ✅ |
-| Demo Mode, Simulate offline, language | Settings | ✅ |
+| Demo Mode, Simulate offline, language (six languages; location-based recommendation; manual choice is saved) | Settings | ✅ |
 
 ---
 
@@ -73,7 +73,7 @@ src/
   sync/                syncQueue.ts (pure logic + tests), syncRunner.ts (IndexedDB + optional server)
   offline/             connectivity.ts (real reachability check), registerSW.ts
   logic/               verifier.ts, ripple.ts, checklist.ts, format.ts  (pure, unit-tested)
-  i18n/                en.ts, es.ts (TypeScript forces identical keys), I18nContext.tsx
+  i18n/                language catalogs (TypeScript forces identical keys), I18nContext.tsx
   data/                guides, resources (official links), neighborhoods, demo.ts (SIMULATED data only)
   types/               Hurricane, WeatherAlert, EmergencyShelter, ChecklistItem, EmergencyContact,
                        FamilyStatus, DisruptionReport, SyncQueueItem, …

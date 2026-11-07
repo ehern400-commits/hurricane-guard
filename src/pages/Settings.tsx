@@ -7,6 +7,7 @@ import { STORES, table, kv } from "../db/db";
 import { seedOnce } from "../db/seed";
 import { Button, Card, ExtLink, PageHeader, SectionTitle } from "../components/ui";
 import { OFFICIAL_SOURCES } from "../data/resources";
+import { LANGUAGE_NAMES, isSupportedLanguage, languageOrder, recommendedLanguage } from "../i18n/languages";
 import type { ChecklistItem, EmergencyContact, FamilyStatus, SavedPlace } from "../types";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -27,8 +28,9 @@ function Toggle({ checked, onChange, label, help, testId }: { checked: boolean; 
 }
 
 export default function Settings() {
-  const { demo, setDemo, simOffline, setSimOffline } = useApp();
+  const { demo, setDemo, simOffline, setSimOffline, location } = useApp();
   const { t, lang, setLang } = useI18n();
+  const preferredLang = recommendedLanguage(location);
   const checklist = useTable<ChecklistItem>("checklist");
   const contacts = useTable<EmergencyContact>("contacts");
   const statuses = useTable<FamilyStatus>("statuses");
@@ -55,14 +57,21 @@ export default function Settings() {
     <div>
       <PageHeader title={t("set.title")} />
       <Card>
-        <p className="mb-2 font-semibold">{t("set.language")}</p>
-        <div className="grid grid-cols-2 gap-2">
-          {(["en", "es"] as const).map((l) => (
-            <button key={l} onClick={() => setLang(l)} aria-pressed={lang === l} className={`min-h-11 rounded-xl font-semibold ${lang === l ? "bg-teal text-white" : "bg-mist"}`}>
-              {l === "en" ? "English" : "Español"}
-            </button>
+        <label htmlFor="language-select" className="mb-2 block font-semibold">{t("set.language")}</label>
+        <select
+          id="language-select"
+          value={lang}
+          onChange={(e) => {
+            if (isSupportedLanguage(e.target.value)) setLang(e.target.value);
+          }}
+          className="min-h-11 w-full rounded-xl border border-navy/15 bg-white px-3 font-semibold"
+        >
+          {languageOrder(preferredLang).map((l) => (
+            <option key={l} value={l}>
+              {LANGUAGE_NAMES[l]}
+            </option>
           ))}
-        </div>
+        </select>
       </Card>
 
       <Card className="mt-3 divide-y divide-navy/5">

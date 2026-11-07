@@ -14,6 +14,8 @@ import { getSavedLocation, saveLocation } from "../services/location";
 import { demoAlerts, demoShelters, demoStorms } from "../data/demo";
 import { runSync } from "../sync/syncRunner";
 import { kv } from "../db/db";
+import { useI18n } from "../i18n/I18nContext";
+import { languageForLocation } from "../i18n/languages";
 import type { EmergencyShelter, Hurricane, UserLocation, WeatherAlert } from "../types";
 
 const empty = <T,>(): Loaded<T> => ({ data: null, fetchedAt: null, origin: null, error: null });
@@ -49,6 +51,7 @@ function initialDemo() {
 }
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
+  const { recommendLang } = useI18n();
   const [net, setNet] = useState<NetState>(getNetState());
   const [lastOnlineAt, setLastOnlineAt] = useState<number | null>(null);
   const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
@@ -67,12 +70,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const loc = await getSavedLocation();
       locRef.current = loc;
       setLoc(loc);
+      recommendLang(languageForLocation(loc));
       setStorms(await readCache<Hurricane[]>("storms"));
       setAlerts(await readCache<WeatherAlert[]>(`alerts:${pointKey(loc.lat, loc.lon)}`));
       setShelters(await readCache<EmergencyShelter[]>("shelters"));
       setLastSyncAt((await kv.get<number>("lastDataSync")) ?? null);
     })();
-  }, []);
+  }, [recommendLang]);
 
   const inflight = useRef<Promise<void> | null>(null);
   const refresh = useCallback(() => {
@@ -116,11 +120,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     await saveLocation(l);
     locRef.current = l;
     setLoc(l);
+    recommendLang(languageForLocation(l));
     setAlerts(await readCache<WeatherAlert[]>(`alerts:${pointKey(l.lat, l.lon)}`));
     // Wait for any refresh using the old location, then load alerts for the new one.
     await (inflight.current ?? Promise.resolve());
     void refresh();
-  }, [refresh]);
+  }, [recommendLang, refresh]);
 
   const setDemo = useCallback((v: boolean) => {
     setDemoState(v);

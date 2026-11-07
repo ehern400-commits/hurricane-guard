@@ -3,7 +3,7 @@
 // live official data, cached data, and simulated demo data.
 
 export type DataOrigin = "live" | "cached" | "demo";
-export type Lang = "en" | "es";
+export type Lang = "en" | "es" | "ht" | "pt" | "fr" | "zh";
 
 export interface Hurricane {
   id: string;

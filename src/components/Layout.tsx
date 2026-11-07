@@ -4,14 +4,16 @@ import { BottomNav, SideNav } from "./BottomNav";
 import { NotificationCenter } from "./NotificationCenter";
 import { useApp } from "../hooks/AppState";
 import { useI18n } from "../i18n/I18nContext";
+import { LANGUAGE_NAMES, isSupportedLanguage, languageOrder, recommendedLanguage } from "../i18n/languages";
 import { timeAgo } from "../logic/format";
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { net, demo, lastSyncAt, alerts } = useApp();
+  const { net, demo, lastSyncAt, alerts, location } = useApp();
   const { t, lang, setLang } = useI18n();
   const [notifOpen, setNotifOpen] = useState(false);
   const offline = net === "offline";
   const alertCount = alerts.data?.length ?? 0;
+  const languages = languageOrder(recommendedLanguage(location));
 
   return (
     <div className="flex min-h-full">
@@ -29,13 +31,24 @@ export function Layout({ children }: { children: ReactNode }) {
               {offline ? <WifiOff size={14} aria-hidden /> : <Wifi size={14} aria-hidden />}
               {t(offline ? "net.offline" : net === "online" ? "net.online" : "net.checking")}
             </span>
-            <button
-              onClick={() => setLang(lang === "en" ? "es" : "en")}
-              className="flex min-h-11 items-center gap-1 rounded-xl px-2 text-sm font-semibold hover:bg-white/10"
-              aria-label={`${t("set.language")}: ${lang === "en" ? "English" : "Español"}`}
-            >
-              <Languages size={18} aria-hidden /> {lang.toUpperCase()}
-            </button>
+            <label className="flex min-h-11 items-center gap-1 rounded-xl px-2 text-sm font-semibold hover:bg-white/10">
+              <Languages size={18} aria-hidden />
+              <span className="sr-only">{t("set.language")}</span>
+              <select
+                aria-label={t("set.language")}
+                value={lang}
+                onChange={(e) => {
+                  if (isSupportedLanguage(e.target.value)) setLang(e.target.value);
+                }}
+                className="max-w-28 bg-transparent text-white"
+              >
+                {languages.map((language) => (
+                  <option key={language} value={language} className="text-navy">
+                    {LANGUAGE_NAMES[language]}
+                  </option>
+                ))}
+              </select>
+            </label>
             <button
               onClick={() => setNotifOpen(true)}
               className="relative grid size-11 place-items-center rounded-xl hover:bg-white/10"
