@@ -8,7 +8,7 @@ import { distanceKm } from "../services/shelters";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Badge, Button, Card, ExtLink, Freshness, Input, PageHeader, SectionTitle } from "../components/ui";
 import { LocationPicker } from "../components/LocationPicker";
-import { HISTORICAL_SHELTERS } from "../data/historicalShelters";
+import { getRecentHistoricalShelters } from "../data/historicalShelters";
 import type { EmergencyShelter, SavedPlace } from "../types";
 
 const MapView = lazy(() => import("../components/MapView"));
@@ -39,7 +39,7 @@ export default function MapPage() {
   }, [shelters.data, q, center.lat, center.lon]);
   const historicalList = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return HISTORICAL_SHELTERS
+    return getRecentHistoricalShelters()
       .filter((s) => !term || `${s.name} ${s.city} ${s.county} ${s.address} ${s.event}`.toLowerCase().includes(term))
       .map((s) => ({ s, km: distanceKm(center.lat, center.lon, s.lat, s.lon) }))
       .sort((a, b) => a.km - b.km);
@@ -90,6 +90,7 @@ export default function MapPage() {
 
       <SectionTitle>{t("map.historicalTitle")}</SectionTitle>
       <p className="mb-3 rounded-xl bg-violet-50 p-3 text-sm text-violet-950">{t("map.historicalDisclaimer")}</p>
+      {historicalList.length === 0 && <p className="mb-3 text-sm text-navy/60">{t("map.historicalNoneRecent")}</p>}
       <ul className="mb-4 space-y-2">
         {historicalList.map(({ s, km }) => (
           <li key={s.id}>

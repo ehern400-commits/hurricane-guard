@@ -9,7 +9,7 @@ Offline-first hurricane preparedness PWA for Miami (English, Spanish, Haitian Cr
 | **Alert Checker**: labels a message *Verified / Suspicious / Unverified* with reasons | Storms → Alert Checker | ✅ (uses last saved official data) |
 | Location-based official alerts (GPS → neighborhood picker → ZIP) | Home | ✅ saved copy |
 | Active storms from the National Hurricane Center | Home, Storms | ✅ saved copy, labeled |
-| Shelters (Miami-Dade official GIS list), sourced historical shelter records, saved places, directions | Map | ✅ lists (map tiles need internet) |
+| Shelters (Miami-Dade official GIS list), sourced historical shelter records from the past 18 months, saved places, directions | Map | ✅ lists (map tiles need internet) |
 | **Hurricane Ripple Effect**: packages, food, travel, utilities | Impact | ✅ saved copy |
 | Preparedness checklist (custom items, progress %) | Safety → Checklist | ✅ |
 | Emergency contacts (tap to call) | Safety → Contacts | ✅ |

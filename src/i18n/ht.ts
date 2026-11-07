@@ -143,6 +143,7 @@ export const ht: Record<I18nKey, string> = {
   "map.historicalTitle": "Ansyen kote ki te sèvi kòm abri",
   "map.historicalBadge": "Abri nan tan lontan — achiv istorik",
   "map.historicalDisclaimer": "Yo te rapòte kote sa yo kòm abri pandan evènman ki pase. Se achiv istorik, se pa lis abri aktyèl; yo pa verifye disponiblite yo kounye a.",
+  "map.historicalNoneRecent": "Poko gen dosye ki dokimante abri ki te ouvè nan dènye 18 mwa yo.",
   "map.historicalEvent": "Yo te rapòte li pandan {event} ({date})",
   "map.mapOffline": "Ou bezwen entènèt pou chaje kat la. Lis ou anrejistre anba a mache san entènèt.",
   "map.saved": "Kote ki anrejistre",

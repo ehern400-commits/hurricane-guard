@@ -16,6 +16,7 @@ export const HISTORICAL_SHELTERS: HistoricalShelter[] = [
     lon: -80.2028495,
     event: "Hurricane Irma",
     eventDate: "September 2017",
+    eventDateISO: "2017-09-10",
     sourceName: "WLRN",
     sourceUrl: IRMA_MIAMI_DADE_SOURCE,
   },
@@ -29,6 +30,7 @@ export const HISTORICAL_SHELTERS: HistoricalShelter[] = [
     lon: -80.1027955,
     event: "Hurricane Irma",
     eventDate: "September 2017",
+    eventDateISO: "2017-09-10",
     sourceName: "WLRN",
     sourceUrl: IRMA_REGIONAL_SOURCE,
   },
@@ -42,7 +44,23 @@ export const HISTORICAL_SHELTERS: HistoricalShelter[] = [
     lon: -80.190756,
     event: "Hurricane Irma",
     eventDate: "September 2017",
+    eventDateISO: "2017-09-10",
     sourceName: "WLRN",
     sourceUrl: IRMA_REGIONAL_SOURCE,
   },
 ];
+
+export function getRecentHistoricalShelters(
+  now = new Date(),
+  shelters: HistoricalShelter[] = HISTORICAL_SHELTERS,
+): HistoricalShelter[] {
+  const cutoff = new Date(now);
+  cutoff.setUTCDate(1);
+  cutoff.setUTCMonth(cutoff.getUTCMonth() - 18);
+  cutoff.setUTCDate(Math.min(
+    now.getUTCDate(),
+    new Date(Date.UTC(cutoff.getUTCFullYear(), cutoff.getUTCMonth() + 1, 0)).getUTCDate(),
+  ));
+  const cutoffDate = cutoff.toISOString().slice(0, 10);
+  return shelters.filter((shelter) => shelter.eventDateISO >= cutoffDate);
+}
