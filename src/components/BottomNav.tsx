@@ -1,6 +1,6 @@
 // Trolley-app-style fixed bottom navigation (mobile) / sidebar (desktop ≥1024px).
 import { NavLink } from "react-router-dom";
-import { CloudLightning, House, Map as MapIcon, Package, ShieldCheck, Wind } from "lucide-react";
+import { CloudLightning, House, Map as MapIcon, Package, ShieldCheck } from "lucide-react";
 import { useI18n } from "../i18n/I18nContext";
 import type { I18nKey } from "../i18n/en";
 
@@ -52,7 +52,7 @@ export function SideNav() {
   return (
     <nav aria-label="Main" className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 bg-navy p-4 text-white lg:flex">
       <div className="mb-6 flex items-center gap-2 px-2 text-lg font-bold">
-        <Wind className="text-teal" aria-hidden /> {t("app.name")}
+        <CloudLightning className="text-teal" aria-hidden /> {t("app.name")}
       </div>
       {TABS.map(({ to, key, Icon }) => (
         <NavLink
