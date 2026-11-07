@@ -6,7 +6,7 @@ Offline-first hurricane preparedness PWA for Miami (English, Spanish, Haitian Cr
 
 | Feature | Where | Works offline? |
 |---|---|---|
-| **Alert Checker**: labels a message *Verified / Suspicious / Unverified* with reasons | Storms → Alert Checker | ✅ (uses last saved official data) |
+| **Alert Checker**: labels a message *Verified / Suspicious / Unverified* with reasons | Storms → Alert Checker | ✅ (on-device check against saved official alerts; the online layer can only make the label stricter) |
 | Location-based official alerts (GPS → neighborhood picker → ZIP) | Home | ✅ saved copy |
 | Active storms from the National Hurricane Center | Home, Storms | ✅ saved copy, labeled |
 | Miami-Dade current open-shelter feed plus Florida-wide official shelter, disaster-update, NHC GIS, FLIPPER, NOAA historical track, and 211 links; saved places and directions | Map | ✅ cached list (external maps need internet) |
@@ -36,7 +36,8 @@ In VS Code: **File → Open Folder → hurricane-guard**, then **Terminal → Ne
 |---|---|
 | `npm run dev` | Dev server with hot reload (service worker **off** in dev on purpose) |
 | `npm run typecheck` | TypeScript check |
-| `npm test` | Unit tests: verifier, ripple, checklist, sync queue |
+| `npm test` | Unit tests: offline checker, verifier, ripple, checklist, sync queue |
+| `npx tsx src/lib/offlineChecker.demo.ts` | Run the nine-sample on-device checker demo |
 | `npm run build` | Typecheck + production build into `dist/` |
 | `npm run preview` | Serve `dist/` locally, **with** the service worker (use this to test offline) |
 
@@ -73,6 +74,7 @@ src/
   sync/                syncQueue.ts (pure logic + tests), syncRunner.ts (IndexedDB + optional server)
   offline/             connectivity.ts (real reachability check), registerSW.ts
   logic/               verifier.ts, ripple.ts, checklist.ts, format.ts  (pure, unit-tested)
+  lib/                 offlineChecker.ts (on-device alert checks), offlineChecker.demo.ts
   i18n/                language catalogs (TypeScript forces identical keys), I18nContext.tsx
   data/                guides, resources (official links), neighborhoods, demo.ts (SIMULATED data only)
   types/               Hurricane, WeatherAlert, EmergencyShelter, ChecklistItem, EmergencyContact,
@@ -116,9 +118,16 @@ test-harness/          offline verification rig used while building (see §8); n
 | OpenStreetMap tiles (Leaflet) | Map | Online only. OSM's policy forbids bulk offline tile downloads, so the saved shelter list is the offline fallback. |
 | OSM Nominatim | ZIP → coordinates | Online only, light use. Neighborhood picker works offline. |
 
-### Alert Checker rules (`src/logic/verifier.ts`)
+### Alert Checker rules (`src/lib/offlineChecker.ts`, `src/logic/verifier.ts`)
 
-Each rule adds or subtracts points, and each produces a plain-language reason in EN/ES:
+The on-device check runs first and makes no network calls:
+- Red flags (untrusted or deceptive links, requests for money or personal data, pressure language, or an agency/link mismatch) make the message **Suspicious**.
+- Without red flags, a match to an active, unexpired official alert saved on the device is **Verified** only while that saved data is recent (six hours or less).
+- Everything else is **Unverified**, with a plain-language reason. Non-English reason translations are marked for human review.
+
+When online, the existing heuristic runs as a second layer. It can only make the offline result stricter; it cannot upgrade a message to **Verified**. The heuristic itself does not fetch network data.
+
+The existing heuristic rules add or subtract points and produce a plain-language reason:
 - **Source:** official app or account, news, forward/chain message, unknown.
 - **Links:** official `.gov` domains count in favor. Link shorteners count against. Look-alike domains (e.g. `fema-relief-help.com`) are a strong red flag.
 - **Scam asks:** money, gift cards, passwords or SSN (EN + ES).
@@ -153,7 +162,7 @@ git push -u origin ui/home-polish     # open a Pull Request on GitHub
 
 - `main` must always build. The lead merges PRs after a quick `npm run build`.
 - Pull often: `git pull origin main` before starting each task.
-- **Translation files are shared:** add new keys at the *end* of your section in both `en.ts` and `es.ts`. TypeScript will fail the build if a key is missing in Spanish.
+- **Translation files are shared:** add new keys to all six language catalogs. TypeScript will fail the build if a key is missing from any catalog.
 - Need to change someone else's file? Ask in the team chat first, or keep it to a tiny PR.
 
 ---

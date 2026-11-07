@@ -72,32 +72,30 @@ export default function MapPage() {
       <PageHeader title={t("map.title")} />
       <LocationPicker />
 
-      {net === "online" ? (
-        <ErrorBoundary fallback={mapFallback}>
-          <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-navy/10" />}>
-            <MapView
-              center={center}
-              shelters={list.slice(0, 200).map(({ s }) => ({
-                ...s,
-                status: s.status === "verified-open" && shelters.origin !== "live" ? "listed" : s.status,
-              }))}
-              supportSites={supportSites}
-              supportLabel={t("map.disasterSupportBadge")}
-              supportServiceLabels={{
-                food: t("map.support.food"),
-                supplies: t("map.support.supplies"),
-                donations: t("map.support.donations"),
-              }}
-              sourceLabel={t("common.source")}
-              historicalShelters={historicalList.map((x) => x.s)}
-              historicalLabel={t("map.historicalBadge")}
-              historicalDisclaimer={t("map.historicalDisclaimer")}
-            />
-          </Suspense>
-        </ErrorBoundary>
-      ) : (
-        mapFallback
-      )}
+      <ErrorBoundary fallback={mapFallback}>
+        <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-navy/10" />}>
+          <MapView
+            center={center}
+            shelters={list.slice(0, 200).map(({ s }) => ({
+              ...s,
+              status: s.status === "verified-open" && shelters.origin !== "live" ? "listed" : s.status,
+            }))}
+            supportSites={supportSites}
+            supportLabel={t("map.disasterSupportBadge")}
+            supportServiceLabels={{
+              food: t("map.support.food"),
+              supplies: t("map.support.supplies"),
+              donations: t("map.support.donations"),
+            }}
+            sourceLabel={t("common.source")}
+            historicalShelters={historicalList.map((x) => x.s)}
+            historicalLabel={t("map.historicalBadge")}
+            historicalDisclaimer={t("map.historicalDisclaimer")}
+            offlineMode={net !== "online"}
+            offlineLabel={t("map.mapOffline")}
+          />
+        </Suspense>
+      </ErrorBoundary>
 
       <p className="mt-3 rounded-xl bg-warn/15 p-3 text-sm text-amber-900">{t("map.statusNote")}</p>
 

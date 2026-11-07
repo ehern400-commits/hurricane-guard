@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, Trash2 } from "lucide-react";
+import { Download, Presentation, Trash2, WifiOff, type LucideIcon } from "lucide-react";
 import { useApp } from "../hooks/AppState";
 import { useI18n } from "../i18n/I18nContext";
 import { useTable } from "../hooks/useTable";
@@ -14,15 +14,42 @@ interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
 }
 
-function Toggle({ checked, onChange, label, help, testId }: { checked: boolean; onChange: (v: boolean) => void; label: string; help: string; testId?: string }) {
+function Toggle({
+  checked, onChange, label, help, testId, icon: Icon, tone, enabledLabel, disabledLabel,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+  help: string;
+  testId?: string;
+  icon: LucideIcon;
+  tone: "amber" | "ocean";
+  enabledLabel: string;
+  disabledLabel: string;
+}) {
+  const activeColors = tone === "amber"
+    ? "border-amber-400 bg-amber-50 ring-amber-200"
+    : "border-ocean/40 bg-ocean/5 ring-ocean/20";
+  const iconColors = tone === "amber"
+    ? "bg-amber-200 text-amber-900"
+    : "bg-ocean/15 text-ocean";
+
   return (
-    <label className="flex min-h-14 cursor-pointer items-center gap-3">
-      <span className="flex-1">
-        <span className="block font-semibold">{label}</span>
-        <span className="block text-xs text-navy/60">{help}</span>
+    <label className={`flex min-h-24 cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-sm ring-1 transition-colors ${checked ? activeColors : "border-navy/10 bg-white ring-navy/5"}`}>
+      <span className={`grid size-12 shrink-0 place-items-center rounded-xl ${checked ? iconColors : "bg-navy/5 text-navy/60"}`}>
+        <Icon size={24} aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="font-bold text-navy">{label}</span>
+          <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${checked ? "bg-teal/15 text-teal-900" : "bg-navy/10 text-navy/60"}`}>
+            {checked ? enabledLabel : disabledLabel}
+          </span>
+        </span>
+        <span className="mt-1 block text-sm text-navy/70">{help}</span>
       </span>
       <input type="checkbox" className="peer sr-only" checked={checked} onChange={(e) => onChange(e.target.checked)} data-testid={testId} />
-      <span className="relative h-7 w-12 shrink-0 rounded-full bg-navy/20 transition peer-checked:bg-teal peer-focus-visible:outline-3 peer-focus-visible:outline-teal after:absolute after:left-1 after:top-1 after:size-5 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5" aria-hidden />
+      <span className="relative h-8 w-14 shrink-0 rounded-full bg-navy/25 transition peer-checked:bg-teal peer-focus-visible:outline-3 peer-focus-visible:outline-teal after:absolute after:left-1 after:top-1 after:size-6 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-6" aria-hidden />
     </label>
   );
 }
@@ -74,10 +101,31 @@ export default function Settings() {
         </select>
       </Card>
 
-      <Card className="mt-3 divide-y divide-navy/5">
-        <Toggle checked={demo} onChange={setDemo} label={t("set.demo")} help={t("set.demoHelp")} testId="demo-toggle" />
-        <Toggle checked={simOffline} onChange={setSimOffline} label={t("set.simOffline")} help={t("set.simOfflineHelp")} testId="offline-toggle" />
-      </Card>
+      <SectionTitle>{t("set.testingModes")}</SectionTitle>
+      <div className="grid gap-3">
+        <Toggle
+          checked={demo}
+          onChange={setDemo}
+          label={t("set.demo")}
+          help={t("set.demoHelp")}
+          testId="demo-toggle"
+          icon={Presentation}
+          tone="amber"
+          enabledLabel={t("set.enabled")}
+          disabledLabel={t("set.disabled")}
+        />
+        <Toggle
+          checked={simOffline}
+          onChange={setSimOffline}
+          label={t("set.simOffline")}
+          help={t("set.simOfflineHelp")}
+          testId="offline-toggle"
+          icon={WifiOff}
+          tone="ocean"
+          enabledLabel={t("set.enabled")}
+          disabledLabel={t("set.disabled")}
+        />
+      </div>
 
       <Card className="mt-3">
         <p className="font-semibold">{t("set.install")}</p>

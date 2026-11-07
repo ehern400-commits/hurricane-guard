@@ -9,6 +9,7 @@ import { SAMPLE_MESSAGES } from "../data/demo";
 import { Button, Card, PageHeader } from "../components/ui";
 import type { VerifyResult } from "../types";
 import type { I18nKey } from "../i18n/en";
+import { checkMessage, type CheckResult } from "../lib/offlineChecker";
 
 const SOURCES: SourceKind[] = ["official-app", "official-social", "news", "forward", "unknown-sms", "unknown-social", "unknown"];
 
@@ -18,32 +19,69 @@ const LOOK = {
   unverified: { Icon: CircleHelp, cls: "bg-warn text-navy", ring: "ring-warn" },
 } as const;
 
+interface CheckerView {
+  offline: CheckResult;
+  label: VerifyResult["label"];
+  onlineReasons: VerifyResult["reasons"];
+  lastSyncedAt: string | null;
+}
+
 export default function AlertChecker() {
-  const { alerts, storms, net, location } = useApp();
-  const { t, tk } = useI18n();
+  const { alerts, storms, net, demo, location } = useApp();
+  const { t, tk, lang } = useI18n();
   const [text, setText] = useState("");
   const [source, setSource] = useState<SourceKind>("unknown");
-  const [result, setResult] = useState<VerifyResult | null>(null);
+  const [result, setResult] = useState<CheckerView | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   function run(txt = text, src = source) {
     if (!txt.trim()) return setErr(t("err.empty"));
     setErr(null);
     const fetchedAt = Math.min(alerts.fetchedAt ?? Infinity, storms.fetchedAt ?? Infinity);
-    setResult(
-      verifyAlert(
+    const hasOfficialCache = alerts.origin !== "demo";
+    const lastSyncedAt = !hasOfficialCache || alerts.fetchedAt === null
+      ? null
+      : new Date(alerts.fetchedAt).toISOString();
+    const offline = checkMessage(txt.slice(0, 2000), {
+      officialAlerts: (hasOfficialCache ? alerts.data ?? [] : []).map((alert) => ({
+        id: alert.id,
+        event: alert.event,
+        areaDesc: alert.areaDesc,
+        expires: alert.expires ?? "",
+        sent: alert.sent,
+        source: alert.senderName,
+      })),
+      lastSyncedAt,
+    });
+
+    let label = offline.label;
+    let onlineReasons: VerifyResult["reasons"] = [];
+    if (net === "online" && !demo) {
+      const online = verifyAlert(
         { text: txt.slice(0, 2000), source: src },
         {
           alerts: alerts.data,
           storms: storms.data,
           dataAgeMs: Number.isFinite(fetchedAt) ? Date.now() - fetchedAt : null,
-          offline: net === "offline",
+          offline: false,
         },
-      ),
-    );
+      );
+      if (offline.label === "verified" && online.label !== "verified") {
+        label = online.label;
+        onlineReasons = online.reasons;
+      } else if (offline.label === "unverified" && online.label === "suspicious") {
+        label = "suspicious";
+        onlineReasons = online.reasons;
+      }
+    }
+
+    setResult({ offline, label, onlineReasons, lastSyncedAt });
   }
 
   const look = result ? LOOK[result.label] : null;
+  const savedAtText = result?.lastSyncedAt
+    ? new Date(result.lastSyncedAt).toLocaleString(lang === "zh" ? "zh-Hans" : lang)
+    : t("check.neverSaved");
 
   return (
     <div>
@@ -101,17 +139,26 @@ export default function AlertChecker() {
           <div className="p-4">
             <h3 className="mb-2 font-semibold">{t("check.why")}</h3>
             <ul className="space-y-2">
-              {result.reasons.map((r, i) => (
+              {result.offline.reasons.map((r, i) => (
                 <li key={i} className="flex gap-2 text-sm">
+                  <span className="mt-1.5 size-2 shrink-0 rounded-full bg-navy/30" aria-hidden />
+                  {tk(r.code) === r.code ? r.text : tk(r.code)}
+                </li>
+              ))}
+              {result.onlineReasons.map((r, i) => (
+                <li key={`online-${i}`} className="flex gap-2 text-sm">
                   <span className={`mt-1.5 size-2 shrink-0 rounded-full ${r.weight > 0 ? "bg-teal" : r.weight < 0 ? "bg-danger" : "bg-navy/30"}`} aria-hidden />
                   {tk(r.key, r.params)}
                 </li>
               ))}
             </ul>
             <p className="mt-3 text-xs text-navy/60">
+              {t("check.deviceChecked")} {t("check.dataLastSaved", { when: savedAtText })}
+            </p>
+            <p className="mt-2 text-xs text-navy/60">
               {t("check.against", {
-                alerts: result.checkedAgainst.alertsCount,
-                storms: result.checkedAgainst.stormsCount,
+                alerts: result.offline.matchedAlertId ? 1 : alerts.data?.length ?? 0,
+                storms: storms.data?.length ?? 0,
                 place: location?.label ?? "Miami",
               })}{" "}
               {t("check.disclaimer")}
