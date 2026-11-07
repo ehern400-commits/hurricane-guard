@@ -52,3 +52,22 @@ test("evacuation claim with no alert for location and unknown source is not veri
   const r = verifyAlert({ text: "Evacuate Little Havana now", source: "unknown" }, quiet);
   assert.notEqual(r.label, "verified");
 });
+
+test("photo taken more than seven days ago adds the dated old-photo reason", () => {
+  const takenAt = new Date(Date.now() - 8 * 24 * 3600_000);
+  const r = verifyAlert({ text: "Hurricane warning", source: "unknown", photo: { takenAt, hasMetadata: true } }, quiet);
+  assert.ok(r.reasons.some((reason) => reason.key === "v.photoOld" && reason.weight === -25 && reason.params?.date === takenAt.toISOString().slice(0, 10)));
+});
+
+test("photo GPS more than 300 km from the user's location adds a distance reason", () => {
+  const r = verifyAlert(
+    { text: "Hurricane warning", source: "unknown", photo: { lat: 40.7128, lon: -74.006, hasMetadata: true } },
+    { ...quiet, location: { lat: 25.7617, lon: -80.1918 } },
+  );
+  assert.ok(r.reasons.some((reason) => reason.key === "v.photoFar" && reason.weight === -15));
+});
+
+test("photo without metadata adds a neutral explanation", () => {
+  const r = verifyAlert({ text: "Hurricane warning", source: "unknown", photo: { hasMetadata: false } }, quiet);
+  assert.ok(r.reasons.some((reason) => reason.key === "v.photoNoMeta" && reason.weight === 0));
+});
