@@ -52,6 +52,20 @@ export interface EmergencyShelter {
   source: string;
 }
 
+export interface HistoricalShelter {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  county: string;
+  lat: number;
+  lon: number;
+  event: string;
+  eventDate: string;
+  sourceName: string;
+  sourceUrl: string;
+}
+
 export type ChecklistCategory = "supplies" | "home" | "family";
 
 export interface ChecklistItem {

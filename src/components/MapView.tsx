@@ -3,15 +3,18 @@
 import { useEffect, useRef } from "react";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import type { EmergencyShelter } from "../types";
+import type { EmergencyShelter, HistoricalShelter } from "../types";
 
 interface Props {
   center: { lat: number; lon: number };
   shelters: EmergencyShelter[];
+  historicalShelters: HistoricalShelter[];
+  historicalLabel: string;
+  historicalDisclaimer: string;
   onSelect?: (s: EmergencyShelter) => void;
 }
 
-export default function MapView({ center, shelters, onSelect }: Props) {
+export default function MapView({ center, shelters, historicalShelters, historicalLabel, historicalDisclaimer, onSelect }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const layer = useRef<L.LayerGroup | null>(null);
@@ -52,7 +55,19 @@ export default function MapView({ center, shelters, onSelect }: Props) {
         .on("click", () => onSelect?.(s))
         .addTo(g);
     });
-  }, [shelters, center.lat, center.lon, onSelect]);
+    historicalShelters.forEach((s) => {
+      L.circleMarker([s.lat, s.lon], {
+        radius: 8,
+        color: "#7047A3",
+        fillColor: "#A78BFA",
+        fillOpacity: 0.9,
+        dashArray: "3 3",
+      })
+        .bindTooltip(historicalLabel)
+        .bindPopup(`<strong>${escapeHtml(s.name)}</strong><br/>${escapeHtml(s.address)}, ${escapeHtml(s.city)}<br/><strong>${escapeHtml(historicalLabel)}</strong><br/>${escapeHtml(s.event)} · ${escapeHtml(s.eventDate)}<br/>${escapeHtml(historicalDisclaimer)}`)
+        .addTo(g);
+    });
+  }, [shelters, historicalShelters, historicalLabel, historicalDisclaimer, center.lat, center.lon, onSelect]);
 
   return <div ref={el} className="h-72 w-full overflow-hidden rounded-2xl" role="application" aria-label="Map" />;
 }
