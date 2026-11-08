@@ -21,7 +21,7 @@ function directionsUrl(s: { lat?: number; lon?: number; address?: string }) {
 }
 
 export default function MapPage() {
-  const { shelters, location, net } = useApp();
+  const { shelters, storms, alerts, location, net } = useApp();
   const { t } = useI18n();
   const saved = useTable<SavedPlace>("places");
   const [q, setQ] = useState("");
@@ -46,6 +46,13 @@ export default function MapPage() {
       .map((s) => ({ s, km: distanceKm(center.lat, center.lon, s.lat, s.lon) }))
       .sort((a, b) => a.km - b.km);
   }, [q, center.lat, center.lon]);
+  const nearbyStorms = useMemo(
+    () => (storms.data ?? [])
+      .filter((storm) => storm.lat != null && storm.lon != null && Number.isFinite(storm.lat) && Number.isFinite(storm.lon))
+      .map((storm) => ({ storm, km: distanceKm(center.lat, center.lon, storm.lat!, storm.lon!) }))
+      .sort((a, b) => a.km - b.km),
+    [storms.data, center.lat, center.lon],
+  );
 
   async function savePlace(p: Omit<SavedPlace, "id" | "createdAt">) {
     await places.put({ ...p, id: uid("place"), createdAt: Date.now() });
@@ -76,10 +83,13 @@ export default function MapPage() {
         <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-navy/10" />}>
           <MapView
             center={center}
+            centerLabel={t("map.yourLocation")}
             shelters={list.slice(0, 200).map(({ s }) => ({
               ...s,
               status: s.status === "verified-open" && shelters.origin !== "live" ? "listed" : s.status,
             }))}
+            storms={storms.data ?? []}
+            stormLabel={t("map.stormMarker")}
             supportSites={supportSites}
             supportLabel={t("map.disasterSupportBadge")}
             supportServiceLabels={{
@@ -96,6 +106,57 @@ export default function MapPage() {
           />
         </Suspense>
       </ErrorBoundary>
+
+      <SectionTitle>{t("map.impactTitle")}</SectionTitle>
+      <Card>
+        <p className="text-sm text-navy/70">{t("map.impactIntro")}</p>
+        <div className="mt-3 rounded-xl bg-ocean/5 p-3 text-sm">
+          <p className="font-semibold">{location?.source === "gps" ? t("map.yourLocation") : location?.label ?? t("loc.default")}</p>
+          <p className="mt-1 text-navy/70">
+            {t("map.coordinates", { lat: center.lat.toFixed(5), lon: center.lon.toFixed(5) })}
+          </p>
+          {location?.source === "gps" && location.accuracyMeters != null && Number.isFinite(location.accuracyMeters) && (
+            <p className="text-navy/70">{t("map.gpsAccuracy", { meters: Math.round(location.accuracyMeters) })}</p>
+          )}
+        </div>
+
+        <h3 className="mt-4 font-semibold">{t("map.activeAlerts")}</h3>
+        {alerts.data === null ? (
+          <p className="mt-1 text-sm text-navy/70">
+            {alerts.error || net === "offline" ? t("map.alertsUnavailableOffline") : t("common.loading")}
+          </p>
+        ) : alerts.data.length === 0 ? (
+          <p className="mt-1 text-sm text-navy/70">{t("map.noActiveAlerts")}</p>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {alerts.data.map((alert) => (
+              <li key={alert.id} className="rounded-xl border border-navy/10 p-3">
+                <p className="font-semibold">{alert.headline}</p>
+                <p className="text-sm text-navy/70">{alert.event} · {alert.severity}</p>
+                {alert.url && <ExtLink href={alert.url}>{t("common.officialLink")}</ExtLink>}
+              </li>
+            ))}
+          </ul>
+        )}
+        {alerts.data !== null && <Freshness fetchedAt={alerts.fetchedAt} origin={alerts.origin} />}
+
+        <h3 className="mt-4 font-semibold">{t("map.stormCenters")}</h3>
+        {nearbyStorms.length === 0 ? (
+          <p className="mt-1 text-sm text-navy/70">{t("map.noActiveStorms")}</p>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {nearbyStorms.slice(0, 5).map(({ storm, km }) => (
+              <li key={storm.id} className="flex items-center justify-between gap-3 rounded-xl border border-navy/10 p-3">
+                <span className="font-semibold">{storm.name}</span>
+                <span className="text-right text-sm text-navy/70">{t("map.stormDistance", { km: km.toFixed(0) })}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {storms.data !== null && <Freshness fetchedAt={storms.fetchedAt} origin={storms.origin} />}
+        <p className="mt-3 text-xs text-navy/60">{t("map.impactCaveat")}</p>
+        <p className="mt-2 text-sm"><ExtLink href="https://www.nhc.noaa.gov/">{t("map.nhcAdvisories")}</ExtLink></p>
+      </Card>
 
       <p className="mt-3 rounded-xl bg-warn/15 p-3 text-sm text-amber-900">{t("map.statusNote")}</p>
 

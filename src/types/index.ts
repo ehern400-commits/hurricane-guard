@@ -146,6 +146,7 @@ export interface UserLocation {
   label: string;
   source: "gps" | "zip" | "default";
   at: number;
+  accuracyMeters?: number;
 }
 
 /** Result of the alert verifier (the EC-Council challenge core). */

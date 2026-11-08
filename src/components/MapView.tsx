@@ -3,12 +3,15 @@
 import { useEffect, useRef } from "react";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import type { EmergencyShelter, HistoricalShelter } from "../types";
+import type { EmergencyShelter, HistoricalShelter, Hurricane } from "../types";
 import type { DropOffSite } from "../data/donate";
 
 interface Props {
   center: { lat: number; lon: number };
+  centerLabel: string;
   shelters: EmergencyShelter[];
+  storms: Hurricane[];
+  stormLabel: string;
   supportSites: DropOffSite[];
   supportLabel: string;
   supportServiceLabels: Record<DropOffSite["services"][number], string>;
@@ -21,7 +24,7 @@ interface Props {
   onSelect?: (s: EmergencyShelter) => void;
 }
 
-export default function MapView({ center, shelters, supportSites, supportLabel, supportServiceLabels, sourceLabel, historicalShelters, historicalLabel, historicalDisclaimer, offlineMode, offlineLabel, onSelect }: Props) {
+export default function MapView({ center, centerLabel, shelters, storms, stormLabel, supportSites, supportLabel, supportServiceLabels, sourceLabel, historicalShelters, historicalLabel, historicalDisclaimer, offlineMode, offlineLabel, onSelect }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const layer = useRef<L.LayerGroup | null>(null);
@@ -61,9 +64,22 @@ export default function MapView({ center, shelters, supportSites, supportLabel, 
     const g = layer.current;
     if (!g) return;
     g.clearLayers();
-    L.circleMarker([center.lat, center.lon], { radius: 8, color: "#10283E", fillColor: "#20B7AD", fillOpacity: 1 })
-      .bindTooltip("You / Tú", { permanent: offlineMode })
+    L.circleMarker([center.lat, center.lon], { radius: 9, color: "#10283E", weight: 3, fillColor: "#20B7AD", fillOpacity: 1 })
+      .bindTooltip(escapeHtml(centerLabel), { permanent: offlineMode })
       .addTo(g);
+    storms.forEach((storm) => {
+      if (storm.lat == null || storm.lon == null || !Number.isFinite(storm.lat) || !Number.isFinite(storm.lon)) return;
+      L.circleMarker([storm.lat, storm.lon], {
+        radius: 9,
+        color: "#7f1d1d",
+        weight: 3,
+        fillColor: "#ef4444",
+        fillOpacity: 0.9,
+      })
+        .bindTooltip(`${escapeHtml(stormLabel)}: ${escapeHtml(storm.name)}`)
+        .bindPopup(`<strong>${escapeHtml(storm.name)}</strong><br/>${escapeHtml(stormLabel)}`)
+        .addTo(g);
+    });
     shelters.forEach((s) => {
       L.circleMarker([s.lat, s.lon], {
         radius: 7,
@@ -97,7 +113,7 @@ export default function MapView({ center, shelters, supportSites, supportLabel, 
         .bindPopup(`<strong>${escapeHtml(s.name)}</strong><br/>${escapeHtml(s.address)}, ${escapeHtml(s.city)}<br/><strong>${escapeHtml(historicalLabel)}</strong><br/>${escapeHtml(s.event)} · ${escapeHtml(s.eventDate)}<br/>${escapeHtml(historicalDisclaimer)}`)
         .addTo(g);
     });
-  }, [shelters, supportSites, supportLabel, supportServiceLabels, sourceLabel, historicalShelters, historicalLabel, historicalDisclaimer, center.lat, center.lon, offlineMode, onSelect]);
+  }, [shelters, storms, stormLabel, centerLabel, supportSites, supportLabel, supportServiceLabels, sourceLabel, historicalShelters, historicalLabel, historicalDisclaimer, center.lat, center.lon, offlineMode, onSelect]);
 
   return (
     <div className="relative">

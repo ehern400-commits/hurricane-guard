@@ -32,9 +32,10 @@ export function requestGps(): Promise<UserLocation> {
           label: labelFor(p.coords.latitude, p.coords.longitude),
           source: "gps",
           at: Date.now(),
+          accuracyMeters: p.coords.accuracy,
         }),
       (e) => reject(new Error(e.code === 1 ? "denied" : "unavailable")),
-      { enableHighAccuracy: false, timeout: 15000, maximumAge: 10 * 60_000 },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
     );
   });
 }

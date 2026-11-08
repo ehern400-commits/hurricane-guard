@@ -51,8 +51,8 @@ export function LocationPicker() {
         <button className="min-h-10 flex-1 text-left font-semibold" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
           {location?.label ?? t("loc.default")}
         </button>
-        <button onClick={useGps} disabled={busy} className="flex min-h-10 items-center gap-1 rounded-xl bg-white/15 px-3 text-xs font-semibold" aria-label={t("loc.useGps")}>
-          <LocateFixed size={16} aria-hidden /> GPS
+        <button onClick={useGps} disabled={busy} className="flex min-h-10 items-center gap-1 whitespace-nowrap rounded-xl bg-white/15 px-3 text-xs font-semibold" aria-label={t("loc.useGps")} aria-busy={busy}>
+          <LocateFixed size={16} aria-hidden /> {t("loc.useGps")}
         </button>
       </div>
       {open && (
