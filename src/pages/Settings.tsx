@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Download, Presentation, Trash2, WifiOff, type LucideIcon } from "lucide-react";
+import { Download, Moon, Presentation, Trash2, Type, WifiOff, type LucideIcon } from "lucide-react";
 import { useApp } from "../hooks/AppState";
+import { useDisplaySettings } from "../hooks/DisplaySettings";
 import { useI18n } from "../i18n/I18nContext";
 import { useTable } from "../hooks/useTable";
 import { STORES, table, kv } from "../db/db";
@@ -58,6 +59,7 @@ function Toggle({
 export default function Settings() {
   const { demo, setDemo, simOffline, setSimOffline, location } = useApp();
   const { t, lang, setLang } = useI18n();
+  const { textSize, setTextSize, darkMode, setDarkMode } = useDisplaySettings();
   const preferredLang = recommendedLanguage(location);
   const checklist = useTable<ChecklistItem>("checklist");
   const contacts = useTable<EmergencyContact>("contacts");
@@ -125,6 +127,38 @@ export default function Settings() {
             </option>
           ))}
         </select>
+      </Card>
+
+      <SectionTitle>{t("set.display")}</SectionTitle>
+      <Card className="grid gap-4">
+        <label className="flex items-center gap-3">
+          <Type size={20} aria-hidden />
+          <span className="flex-1 font-semibold">{t("set.textSize")}</span>
+          <select
+            value={textSize}
+            onChange={(e) => {
+              if (e.target.value === "small" || e.target.value === "normal" || e.target.value === "large") {
+                setTextSize(e.target.value);
+              }
+            }}
+            className="min-h-11 rounded-xl border border-navy/15 bg-white px-3 font-semibold"
+          >
+            <option value="small">{t("set.textSmall")}</option>
+            <option value="normal">{t("set.textNormal")}</option>
+            <option value="large">{t("set.textLarge")}</option>
+          </select>
+        </label>
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 font-semibold">
+          <Moon size={20} aria-hidden />
+          <span className="flex-1">{t("set.darkMode")}</span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={darkMode}
+            onChange={(e) => setDarkMode(e.target.checked)}
+            className="size-5 accent-teal"
+          />
+        </label>
       </Card>
 
       <SectionTitle>{t("set.testingModes")}</SectionTitle>

@@ -350,6 +350,12 @@ export const en = {
 
   "set.title": "Settings",
   "set.language": "Language",
+  "set.display": "Display",
+  "set.textSize": "Text size",
+  "set.textSmall": "Small",
+  "set.textNormal": "Normal",
+  "set.textLarge": "Large",
+  "set.darkMode": "Dark mode",
   "set.testingModes": "Testing modes",
   "set.enabled": "ON",
   "set.disabled": "OFF",

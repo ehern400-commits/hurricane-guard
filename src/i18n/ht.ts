@@ -352,6 +352,12 @@ export const ht: Record<I18nKey, string> = {
 
   "set.title": "Paramèt",
   "set.language": "Lang",
+  "set.display": "Afichaj",
+  "set.textSize": "Gwosè tèks",
+  "set.textSmall": "Piti",
+  "set.textNormal": "Nòmal",
+  "set.textLarge": "Gwo",
+  "set.darkMode": "Mòd fènwa",
   "set.testingModes": "Mòd tès yo",
   "set.enabled": "LIMEN",
   "set.disabled": "ETENN",

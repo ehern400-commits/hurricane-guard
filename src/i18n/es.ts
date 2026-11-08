@@ -352,6 +352,12 @@ export const es: Record<I18nKey, string> = {
 
   "set.title": "Ajustes",
   "set.language": "Idioma",
+  "set.display": "Visualización",
+  "set.textSize": "Tamaño del texto",
+  "set.textSmall": "Pequeño",
+  "set.textNormal": "Normal",
+  "set.textLarge": "Grande",
+  "set.darkMode": "Modo oscuro",
   "set.testingModes": "Modos de prueba",
   "set.enabled": "ACTIVADO",
   "set.disabled": "DESACTIVADO",
