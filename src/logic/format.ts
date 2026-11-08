@@ -25,7 +25,19 @@ export function compass(deg: number | null) {
 }
 
 export function timeAgo(ts: number | string | null | undefined, lang: Lang) {
-  if (ts == null) return ({ en: "never", es: "nunca", ht: "pa janm", pt: "nunca", fr: "jamais", zh: "从未" })[lang];
+  if (ts == null) return ({
+    en: "never",
+    es: "nunca",
+    ht: "pa janm",
+    pt: "nunca",
+    fr: "jamais",
+    zh: "从未",
+    ar: "أبدًا",
+    hi: "कभी नहीं",
+    ko: "없음",
+    ja: "一度もない",
+    it: "mai",
+  } satisfies Record<Lang, string>)[lang];
   const ms = Date.now() - (typeof ts === "string" ? Date.parse(ts) : ts);
   const rtf = new Intl.RelativeTimeFormat(LANGUAGE_LOCALES[lang], { numeric: "auto" });
   const m = Math.round(ms / 60000);

@@ -2,7 +2,7 @@
 
 **Stay Prepared. Stay Connected. Stay Informed.**
 
-Offline-first hurricane preparedness PWA for Miami (English, Spanish, Haitian Creole, Portuguese, French, and Simplified Chinese), built for the Sharkbyte hackathon EC-Council challenge: *tell real hurricane alerts from fake ones, explain why in plain language, and keep working when the network goes down.*
+Offline-first hurricane preparedness PWA for Miami (English, Spanish, Haitian Creole, Portuguese, French, Simplified Chinese, Arabic, Hindi, Korean, Japanese, and Italian), built for the Sharkbyte hackathon EC-Council challenge: *tell real hurricane alerts from fake ones, explain why in plain language, and keep working when the network goes down.*
 
 | Feature | Where | Works offline? |
 |---|---|---|
@@ -15,7 +15,7 @@ Offline-first hurricane preparedness PWA for Miami (English, Spanish, Haitian Cr
 | Emergency contacts (tap to call) | Safety → Contacts | ✅ |
 | Family safety status + sync queue | Safety → Family | ✅ saved locally |
 | Emergency guide + search across all local content | Safety → Guide | ✅ |
-| Demo Mode, Simulate offline, language (six languages; location-based recommendation; manual choice is saved) | Settings | ✅ |
+| Demo Mode, Simulate offline, language (11 languages; location-based recommendation; manual choice is saved) | Settings | ✅ |
 
 ---
 
@@ -164,7 +164,7 @@ git push -u origin ui/home-polish     # open a Pull Request on GitHub
 
 - `main` must always build. The lead merges PRs after a quick `npm run build`.
 - Pull often: `git pull origin main` before starting each task.
-- **Translation files are shared:** add new keys to all six language catalogs. TypeScript will fail the build if a key is missing from any catalog.
+- **Translation files are shared:** add new keys to all 11 language catalogs. TypeScript will fail the build if a key is missing from any catalog.
 - Need to change someone else's file? Ask in the team chat first, or keep it to a tiny PR.
 
 ---

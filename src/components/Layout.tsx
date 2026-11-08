@@ -43,7 +43,7 @@ export function Layout({ children }: { children: ReactNode }) {
                 className="max-w-28 bg-transparent text-white"
               >
                 {languages.map((language) => (
-                  <option key={language} value={language} className="text-navy">
+                  <option key={language} value={language} className="header-language-option text-navy">
                     {LANGUAGE_NAMES[language]}
                   </option>
                 ))}
@@ -63,7 +63,7 @@ export function Layout({ children }: { children: ReactNode }) {
             </button>
           </div>
           {demo && (
-            <div className="flex items-center justify-center gap-2 bg-warn px-4 py-1.5 text-center text-xs font-bold text-navy">
+            <div className="demo-banner flex items-center justify-center gap-2 bg-warn px-4 py-1.5 text-center text-xs font-bold">
               <FlaskConical size={14} aria-hidden /> {t("demo.banner")}
             </div>
           )}

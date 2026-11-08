@@ -61,6 +61,20 @@ html[data-theme="dark"] .bg-white {
   background-color: #1f2937;
 }
 
+html[data-theme="dark"] .bottom-nav {
+  background-color: rgb(31 41 55 / 95%);
+}
+
+header select option.header-language-option {
+  background-color: #fff;
+  color: #10283e;
+}
+
+html[data-theme="dark"] header select option.header-language-option {
+  background-color: #fff;
+  color: #10283e;
+}
+
 html[data-theme="dark"] .bg-mist {
   background-color: #111827;
 }
@@ -68,6 +82,31 @@ html[data-theme="dark"] .bg-mist {
 html[data-theme="dark"] [class~="text-navy"],
 html[data-theme="dark"] [class*="text-navy/"] {
   color: #e5e7eb;
+}
+
+html[data-theme="dark"] .demo-banner {
+  background-color: #713f12;
+  color: #fef3c7;
+}
+
+html:not([data-theme="dark"]) .storm-demo-notice {
+  background-color: #f59e0b;
+  color: #10283e;
+}
+
+html[data-theme="dark"] .storm-demo-notice {
+  background-color: #713f12;
+  color: #fef3c7;
+}
+
+html[data-theme="dark"] .demo-mode-toggle {
+  border-color: #f59e0b;
+  background-color: #713f12;
+}
+
+html[data-theme="dark"] .demo-mode-toggle [class~="text-navy"],
+html[data-theme="dark"] .demo-mode-toggle [class*="text-navy/"] {
+  color: #fef3c7;
 }
 
 html[data-theme="dark"] [class*="border-navy/"],

@@ -82,6 +82,7 @@ export const zh: Record<I18nKey, string> = {
   "storms.cls.STD": "亚热带低压",
   "storms.cls.PTC": "潜在热带气旋",
   "storms.cls.PC": "后热带气旋",
+  "storms.demoNotice": "虚构演示风暴 — 并非真实风暴。此风暴仅为演示而模拟。请勿将其视为真实预报或警报。",
   "storms.limits": "数据来源：NHC 活跃风暴数据源（大西洋及东部和中部太平洋）。等级依据 NHC 报告的风速，按萨菲尔-辛普森飓风等级划分。",
   "storms.offTitle": "正在显示已保存的风暴数据",
 

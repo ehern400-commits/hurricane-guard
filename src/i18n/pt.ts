@@ -82,6 +82,7 @@ export const pt: Record<I18nKey, string> = {
   "storms.cls.STD": "Depressão subtropical",
   "storms.cls.PTC": "Ciclone tropical potencial",
   "storms.cls.PC": "Ciclone pós-tropical",
+  "storms.demoNotice": "TEMPESTA FICTÍCIA DE DEMONSTRAÇÃO — NÃO É REAL. Esta tempestade é simulada apenas para demonstração. Não a considere uma previsão ou alerta real.",
   "storms.limits": "Dados: feed de tempestades ativas do NHC (Atlântico e Pacífico Leste/Central). A categoria segue a escala Saffir-Simpson, com base no vento informado pelo NHC.",
   "storms.offTitle": "Exibindo dados de tempestades salvos",
 

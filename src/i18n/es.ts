@@ -82,6 +82,7 @@ export const es: Record<I18nKey, string> = {
   "storms.cls.STD": "Depresión subtropical",
   "storms.cls.PTC": "Ciclón tropical potencial",
   "storms.cls.PC": "Ciclón postropical",
+  "storms.demoNotice": "TORMENTA FICTICIA DE DEMOSTRACIÓN — NO ES REAL. Esta tormenta es una simulación solo para demostración. No la consideres un pronóstico ni una alerta real.",
   "storms.limits": "Datos: feed de tormentas activas del NHC (Atlántico y Pacífico). La categoría es la de Saffir-Simpson según el viento reportado por el NHC.",
   "storms.offTitle": "Mostrando datos de tormentas guardados",
 

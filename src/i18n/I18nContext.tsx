@@ -1,14 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { en, type I18nKey } from "./en";
 import { es } from "./es";
-import { browserLanguage, isSupportedLanguage } from "./languages";
+import { browserLanguage, isSupportedLanguage, LANGUAGE_LOCALES } from "./languages";
 import { ht } from "./ht";
 import { pt } from "./pt";
 import { fr } from "./fr";
 import { zh } from "./zh";
+import { ar } from "./ar";
+import { hi } from "./hi";
+import { ko } from "./ko";
+import { ja } from "./ja";
+import { it } from "./it";
 import type { Lang } from "../types";
 
-const DICTS: Record<Lang, Record<I18nKey, string>> = { en, es, ht, pt, fr, zh };
+const DICTS: Record<Lang, Record<I18nKey, string>> = { en, es, ht, pt, fr, zh, ar, hi, ko, ja, it };
 const STORAGE_KEY = "hg.lang";
 
 type Params = Record<string, string | number>;
@@ -57,7 +62,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLangState(l);
   }, []);
   useEffect(() => {
-    document.documentElement.lang = lang === "zh" ? "zh-Hans" : lang === "pt" ? "pt-BR" : lang;
+    document.documentElement.lang = LANGUAGE_LOCALES[lang];
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   }, [lang]);
 
   const value = useMemo<I18nValue>(() => {

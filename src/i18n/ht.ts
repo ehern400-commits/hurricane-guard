@@ -82,6 +82,7 @@ export const ht: Record<I18nKey, string> = {
   "storms.cls.STD": "Depresyon sou-twopikal",
   "storms.cls.PTC": "Siklòn twopikal ki ka fòme",
   "storms.cls.PC": "Siklòn apre-twopikal",
+  "storms.demoNotice": "TANPÈT DEMO KI ENVANTE — SE PA YON VRÈ TANPÈT. Yo kreye egzanp sa a sèlman pou demonstrasyon. Pa pran li pou yon vrè previzyon oswa alèt.",
   "storms.limits": "Done: Flux tanpèt aktif NHC yo (Atlantik ak Pasifik lès/santral). Kategori a se kategori Saffir-Simpson ki koresponn ak van NHC rapòte a.",
   "storms.offTitle": "Men done tanpèt ki te anrejistre yo",
 

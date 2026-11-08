@@ -82,6 +82,7 @@ export const fr: Record<I18nKey, string> = {
   "storms.cls.STD": "Dépression subtropicale",
   "storms.cls.PTC": "Cyclone tropical potentiel",
   "storms.cls.PC": "Cyclone post-tropical",
+  "storms.demoNotice": "TEMPÊTE DE DÉMONSTRATION FICTIVE — PAS RÉELLE. Cette tempête est simulée uniquement à des fins de démonstration. Ne la prenez pas pour une vraie prévision ou alerte.",
   "storms.limits": "Données : flux des tempêtes actives du NHC (Atlantique et Pacifique Est/Central). La catégorie Saffir-Simpson est établie selon le vent signalé par le NHC.",
   "storms.offTitle": "Affichage des données de tempête enregistrées",
 

@@ -81,6 +81,7 @@ export const en = {
   "storms.cls.STD": "Subtropical Depression",
   "storms.cls.PTC": "Potential Tropical Cyclone",
   "storms.cls.PC": "Post-Tropical Cyclone",
+  "storms.demoNotice": "FICTIONAL DEMO STORM — NOT REAL. This storm is simulated for demonstration only. Do not treat it as a real forecast or warning.",
   "storms.limits": "Data: NHC active storms feed (Atlantic & E/C Pacific). Category is the Saffir-Simpson category for the NHC-reported wind.",
   "storms.offTitle": "Showing saved storm data",
 

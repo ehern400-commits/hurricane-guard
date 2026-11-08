@@ -1,7 +1,7 @@
 import { nearestNeighborhood } from "../data/neighborhoods";
 import type { Lang, UserLocation } from "../types";
 
-export const SUPPORTED_LANGUAGES: readonly Lang[] = ["en", "es", "ht", "pt", "fr", "zh"];
+export const SUPPORTED_LANGUAGES: readonly Lang[] = ["en", "es", "ht", "pt", "fr", "zh", "ar", "hi", "ko", "ja", "it"];
 export const LANGUAGE_NAMES: Record<Lang, string> = {
   en: "English",
   es: "Español",
@@ -9,6 +9,11 @@ export const LANGUAGE_NAMES: Record<Lang, string> = {
   pt: "Português",
   fr: "Français",
   zh: "简体中文",
+  ar: "العربية",
+  hi: "हिन्दी",
+  ko: "한국어",
+  ja: "日本語",
+  it: "Italiano",
 };
 export const LANGUAGE_LOCALES: Record<Lang, string> = {
   en: "en-US",
@@ -17,6 +22,11 @@ export const LANGUAGE_LOCALES: Record<Lang, string> = {
   pt: "pt-BR",
   fr: "fr-FR",
   zh: "zh-Hans",
+  ar: "ar",
+  hi: "hi-IN",
+  ko: "ko-KR",
+  ja: "ja-JP",
+  it: "it-IT",
 };
 
 export function isSupportedLanguage(value: string | null): value is Lang {

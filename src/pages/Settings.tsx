@@ -37,7 +37,7 @@ function Toggle({
     : "bg-ocean/15 text-ocean";
 
   return (
-    <label className={`flex min-h-24 cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-sm ring-1 transition-colors ${checked ? activeColors : "border-navy/10 bg-white ring-navy/5"}`}>
+    <label className={`${checked && tone === "amber" ? "demo-mode-toggle" : ""} flex min-h-24 cursor-pointer items-center gap-4 rounded-2xl border p-4 shadow-sm ring-1 transition-colors ${checked ? activeColors : "border-navy/10 bg-white ring-navy/5"}`}>
       <span className={`grid size-12 shrink-0 place-items-center rounded-xl ${checked ? iconColors : "bg-navy/5 text-navy/60"}`}>
         <Icon size={24} aria-hidden />
       </span>

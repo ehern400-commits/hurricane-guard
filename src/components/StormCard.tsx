@@ -1,4 +1,4 @@
-import { Navigation, Wind } from "lucide-react";
+import { FlaskConical, Navigation, Wind } from "lucide-react";
 import { useI18n } from "../i18n/I18nContext";
 import { compass, fmtDateTime } from "../logic/format";
 import type { Hurricane } from "../types";
@@ -12,6 +12,12 @@ export function StormCard({ s, detailed = false }: { s: Hurricane; detailed?: bo
   const catCls = s.category && s.category >= 3 ? "bg-danger text-white" : "bg-warn text-navy";
   return (
     <div className="rounded-2xl bg-gradient-to-br from-navy to-ocean p-4 text-white shadow">
+      {s.origin === "demo" && (
+        <p className="storm-demo-notice mb-3 flex items-start gap-2 rounded-xl px-3 py-2 text-sm font-bold" role="note">
+          <FlaskConical size={18} className="mt-0.5 shrink-0" aria-hidden />
+          {t("storms.demoNotice")}
+        </p>
+      )}
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-xs uppercase tracking-wide text-white/70">{clsLabel}</p>
