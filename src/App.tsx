@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { HashRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { I18nProvider } from "./i18n/I18nContext";
 import { AppStateProvider } from "./hooks/AppState";
+import { DisplaySettingsProvider } from "./hooks/DisplaySettings";
 import { Layout } from "./components/Layout";
 import Home from "./pages/Home";
 import Storms from "./pages/Storms";
@@ -29,28 +30,30 @@ function ScrollToTop() {
 export default function App() {
   return (
     <I18nProvider>
-      <AppStateProvider>
-        <HashRouter>
-          <ScrollToTop />
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/storms" element={<Storms />} />
-              <Route path="/storms/check" element={<AlertChecker />} />
-              <Route path="/map" element={<MapPage />} />
-              <Route path="/impact" element={<Impact />} />
-              <Route path="/safety" element={<Safety />} />
-              <Route path="/safety/checklist" element={<Checklist />} />
-              <Route path="/safety/contacts" element={<Contacts />} />
-              <Route path="/safety/family" element={<Family />} />
-              <Route path="/safety/guide" element={<Guide />} />
-              <Route path="/safety/donate" element={<Donate />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Layout>
-        </HashRouter>
-      </AppStateProvider>
+      <DisplaySettingsProvider>
+        <AppStateProvider>
+          <HashRouter>
+            <ScrollToTop />
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/storms" element={<Storms />} />
+                <Route path="/storms/check" element={<AlertChecker />} />
+                <Route path="/map" element={<MapPage />} />
+                <Route path="/impact" element={<Impact />} />
+                <Route path="/safety" element={<Safety />} />
+                <Route path="/safety/checklist" element={<Checklist />} />
+                <Route path="/safety/contacts" element={<Contacts />} />
+                <Route path="/safety/family" element={<Family />} />
+                <Route path="/safety/guide" element={<Guide />} />
+                <Route path="/safety/donate" element={<Donate />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Layout>
+          </HashRouter>
+        </AppStateProvider>
+      </DisplaySettingsProvider>
     </I18nProvider>
   );
 }

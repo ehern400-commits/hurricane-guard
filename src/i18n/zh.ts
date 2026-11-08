@@ -352,6 +352,12 @@ export const zh: Record<I18nKey, string> = {
 
   "set.title": "设置",
   "set.language": "语言",
+  "set.display": "显示",
+  "set.textSize": "文字大小",
+  "set.textSmall": "小",
+  "set.textNormal": "标准",
+  "set.textLarge": "大",
+  "set.darkMode": "深色模式",
   "set.testingModes": "测试模式",
   "set.enabled": "已开启",
   "set.disabled": "已关闭",
