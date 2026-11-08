@@ -1,7 +1,7 @@
-// Vercel Node.js function: POST /api/ai-check. The Anthropic key stays server-side.
+// Vercel Node.js function: POST /api/ai-check. The Gemini key stays server-side.
 export const config = { runtime: "nodejs" };
 
-const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 const SYSTEM_PROMPT = `You help Miami residents check if hurricane news, messages and photos may be fake. You cannot be certain. Look for red flags: AI watermarks (e.g. Sora), garbled text on signs, objects blending together, impossible scenes (sharks in streets or pools), scam requests (money, gift cards, personal data), urgency to share, and claims that contradict the official alerts provided. Answer ONLY with JSON: { "verdict": "likely_fake" | "uncertain" | "no_red_flags", "redFlags": string[], "explanation": string } written in the user's language, in plain simple words, max 4 short sentences. Never say something is definitely real.`;
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const MAX_TEXT_LENGTH = 2000;
@@ -42,9 +42,13 @@ function fallbackOpinion() {
   };
 }
 
-function parseOpinion(content: unknown) {
-  if (!Array.isArray(content)) return fallbackOpinion();
-  const text = content.find((block) => isRecord(block) && block.type === "text");
+function parseOpinion(response: unknown) {
+  if (!isRecord(response) || !Array.isArray(response.candidates) || !isRecord(response.candidates[0])) {
+    return fallbackOpinion();
+  }
+  const content = response.candidates[0].content;
+  if (!isRecord(content) || !Array.isArray(content.parts)) return fallbackOpinion();
+  const text = content.parts.find((part) => isRecord(part) && typeof part.text === "string");
   if (!isRecord(text) || typeof text.text !== "string") return fallbackOpinion();
   try {
     const parsed: unknown = JSON.parse(text.text);
@@ -66,7 +70,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     res.setHeader("Allow", "POST");
     return json(res, 405, { error: "Method not allowed" });
   }
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return json(res, 503, { error: "AI not configured" });
 
   const body: ClientBody = isRecord(req.body) ? req.body : {};
@@ -94,12 +98,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const content: Record<string, unknown>[] = [];
   if (body.image && isRecord(body.image)) {
     content.push({
-      type: "image",
-      source: { type: "base64", media_type: body.image.media_type, data: body.image.data },
+      inlineData: { mimeType: body.image.media_type, data: body.image.data },
     });
   }
   content.push({
-    type: "text",
     text: [
       `User language: ${typeof body.language === "string" ? body.language : "en"}`,
       `Message text:\n${body.text}`,
@@ -109,23 +111,25 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   });
 
   try {
-    const upstream = await fetch(ANTHROPIC_URL, {
+    const upstream = await fetch(GEMINI_URL, {
       method: "POST",
       headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        "x-goog-api-key": apiKey,
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-haiku-5-5",
-        max_tokens: 600,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content }],
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [{ role: "user", parts: content }],
+        generationConfig: {
+          maxOutputTokens: 600,
+          responseMimeType: "application/json",
+          temperature: 0.2,
+        },
       }),
     });
     if (!upstream.ok) return json(res, 502, { error: "AI service unavailable" });
     const response: unknown = await upstream.json();
-    return json(res, 200, parseOpinion(isRecord(response) ? response.content : undefined));
+    return json(res, 200, parseOpinion(response));
   } catch {
     return json(res, 502, { error: "AI service unavailable" });
   }

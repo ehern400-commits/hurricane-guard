@@ -32,6 +32,8 @@ npm run dev          # → http://localhost:5173  (and your LAN IP for phones)
 
 In VS Code: **File → Open Folder → hurricane-guard**, then **Terminal → New Terminal** and run the commands above. Recommended extensions: *Tailwind CSS IntelliSense*, *ESLint*, *Prettier*.
 
+The optional Gemini check uses the Vercel serverless endpoint. To use it locally, copy `.env.example` to `.env.local`, set `GEMINI_API_KEY` there (never use a `VITE_` prefix), then run `npm run dev:vercel`. For deployment, add `GEMINI_API_KEY` to the project's server-side environment variables and redeploy. Revoke any key that has been shared publicly.
+
 | Command | What it does |
 |---|---|
 | `npm run dev` | Dev server with hot reload (service worker **off** in dev on purpose) |
